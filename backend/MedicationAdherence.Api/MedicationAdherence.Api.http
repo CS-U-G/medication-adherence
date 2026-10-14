@@ -1,0 +1,6 @@
+@MedicationAdherence.Api_HostAddress = http://localhost:5116
+
+GET {{MedicationAdherence.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
