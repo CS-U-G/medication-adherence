@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="MedicationAdherence.Api/MedicationAdherence.Api.csproj" />
-  <Project Path="MedicationAdherence.Tests/MedicationAdherence.Tests.csproj" />
-</Solution>

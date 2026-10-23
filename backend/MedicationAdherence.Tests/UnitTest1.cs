@@ -1,4 +1,4 @@
-﻿namespace MedicationAdherence.Tests;
+namespace MedicationAdherence.Tests;
 
 public class UnitTest1
 {
