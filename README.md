@@ -206,26 +206,43 @@ A monorepo: one repository, three independent applications.
 
 ```
 medication-adherence/
-├── backend/
-│   └── MedicationAdherence.Api/
-│       ├── Controllers/  Data/  DTOs/  Models/  Services/
-│       ├── Repositories/  Validators/  Middleware/  Migrations/
-│       └── Program.cs
-│   └── MedicationAdherence.Tests/
-├── mobile/
-│   └── medication_adherence/
-│       └── lib/
-│           ├── core/  models/  services/  repositories/  routing/
-│           └── features/
-│               ├── authentication/  dashboard/  medications/
-│               └── reminders/  dose_tracking/  history/
-├── web/
-│   └── medication-adherence-admin/
-│       └── src/app/
-│           ├── core/  shared/
-│           └── features/
-│               ├── authentication/  dashboard/  patients/
-│               └── prescriptions/  schedules/  reports/
+├── backend/                                  
+│   ├── MedicationAdherence.Api/              
+│   │   ├── Controllers/                      
+│   │   ├── Middleware/                       
+│   │   └── Program.cs                        
+│   │
+│   ├── MedicationAdherence.BLL/              
+│   │   ├── Services/                         
+│   │   ├── Interfaces/                       
+│   │   ├── DTOs/                             
+│   │   └── Validators/                       
+│   │
+│   ├── MedicationAdherence.DAL/              
+│   │   ├── Data/                             
+│   │   ├── Models/                           
+│   │   ├── Repositories/                     
+│   │   └── Migrations/                       
+│   │
+│   └── MedicationAdherence.Tests/            
+│
+├── presentation/                            
+│   ├── mobile/                               
+│   │   └── medication_adherence/
+│   │       └── lib/
+│   │           ├── core/  models/  services/  repositories/  routing/
+│   │           └── features/
+│   │               ├── authentication/  dashboard/  medications/
+│   │               └── reminders/  dose_tracking/  history/
+│   │
+│   └── web/                                  
+│       └── medication-adherence-admin/
+│           └── src/app/
+│               ├── core/  shared/
+│               └── features/
+│                   ├── authentication/  dashboard/  patients/
+│                   └── prescriptions/  schedules/  reports/
+│
 ├── docs/
 ├── scripts/
 └── .github/workflows/
