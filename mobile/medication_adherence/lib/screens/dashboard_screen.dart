@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
-// import '../core/app_colors.dart';
 import '../models/medication.dart';
 import '../services/medication_service.dart';
 import 'add_medication_screen.dart';
+import 'profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -16,7 +16,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime selectedDate = DateUtils.dateOnly(DateTime.now());
   int selectedTab = 0;
 
-  // Dose completion is tracked separately for each date and medication.
+  // Temporary in-memory dose tracking.
   final Set<String> takenDoses = {};
 
   static const Color ink = Color(0xFF182C25);
@@ -87,34 +87,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // The Profile screen is now connected to bottom navigation.
+    if (selectedTab == 3) {
+      return Scaffold(
+        body: const ProfileScreen(),
+        bottomNavigationBar: _bottomNavigation(),
+      );
+    }
+
+    // Schedule and History will receive their own screens later.
+    if (selectedTab == 1 || selectedTab == 2) {
+      return _secondaryPage();
+    }
+
     final allMedications = MedicationService.medications;
     final scheduled = allMedications.where(_isScheduled).toList();
-
     final entries = <_DoseEntry>[];
 
     for (final medication in scheduled) {
       final index = allMedications.indexOf(medication);
 
       for (final time in medication.reminderTimes) {
-        entries.add(_DoseEntry(
-          medication: medication,
-          medicationIndex: index,
-          time: time,
-          key: doseKey(index, time),
-        ));
+        entries.add(
+          _DoseEntry(
+            medication: medication,
+            medicationIndex: index,
+            time: time,
+            key: doseKey(index, time),
+          ),
+        );
       }
     }
 
     entries.sort(
       (a, b) => _timeMinutes(a.time).compareTo(_timeMinutes(b.time)),
     );
-
-    // final completed = entries.where((e) => takenDoses.contains(e.key)).length;
-    // final isToday = DateUtils.isSameDay(selectedDate, DateTime.now());
-
-    if (selectedTab != 0) {
-      return _secondaryPage();
-    }
 
     return Scaffold(
       backgroundColor: canvas,
@@ -217,7 +224,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _header() {
     return Row(
       children: [
-       Container(
+        Container(
           width: 46,
           height: 46,
           padding: const EdgeInsets.all(5),
@@ -285,7 +292,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _daySelector() {
-    // Show four consecutive dates, beginning with today.
     final today = DateUtils.dateOnly(DateTime.now());
 
     return Row(
@@ -649,9 +655,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           height: 4,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: selected
-                                ? green
-                                : Colors.transparent,
+                            color: selected ? green : Colors.transparent,
                           ),
                         ),
                       ],
@@ -690,9 +694,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Icon(
                 selectedTab == 1
                     ? Icons.calendar_month_outlined
-                    : selectedTab == 2
-                        ? Icons.bar_chart_rounded
-                        : Icons.person_outline_rounded,
+                    : Icons.bar_chart_rounded,
                 color: green,
                 size: 52,
               ),
@@ -726,6 +728,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         builder: (_) => const AddMedicationScreen(),
       ),
     );
+
     if (mounted) setState(() {});
   }
 }
