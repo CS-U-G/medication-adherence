@@ -220,7 +220,8 @@ medication-adherence/
 │   │
 │   ├── MedicationAdherence.DAL/              
 │   │   ├── Data/                             
-│   │   ├── Models/                           
+│   │   ├── Models/
+│   │   ├── Enums/                           
 │   │   ├── Repositories/                     
 │   │   └── Migrations/                       
 │   │
