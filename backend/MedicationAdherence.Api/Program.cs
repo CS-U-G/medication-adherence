@@ -1,6 +1,5 @@
-
-using MedicationAdherence.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using MedicationAdherence.BLL.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +10,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+string connString = builder.Configuration.GetConnectionString("MedicationAdherenceDB")!;
+builder.Services.AddDependencyInjections(connString);
 
 var app = builder.Build();
 
