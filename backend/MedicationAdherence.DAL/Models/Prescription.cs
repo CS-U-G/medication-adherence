@@ -14,6 +14,6 @@ namespace MedicationAdherence.DAL.Models
         public int DoctorId { get; set; }
         public string? DiagnosisNotes { get; set; }
         public DateTime IssuedDate { get; set; }
-        public enStatus Status { get; set; }
+        public enPrescriptionStatus Status { get; set; }
     }
 }

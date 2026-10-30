@@ -13,7 +13,7 @@ namespace MedicationAdherence.DAL.Models
         public int PersonId { get; set; }
         public string Email {  get; set; }
         public string PasswordHash { get; set; }
-        public enRole Role { get; set; }
+        public enUserRole Role { get; set; }
         public bool IsActive { get; set; }
     }
 }
