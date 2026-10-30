@@ -15,5 +15,7 @@ namespace MedicationAdherence.DAL.Models
         public string? Strength { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
+        public ICollection<PrescriptionItem> PrescriptionItems { get; set; }
+        = new List<PrescriptionItem>();
     }
 }

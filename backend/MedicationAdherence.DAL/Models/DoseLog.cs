@@ -17,5 +17,7 @@ namespace MedicationAdherence.DAL.Models
         public DateTime? TakenAt { get; set; }
         public string? SkipReason { get; set; }
         public DateTime CreatedAt { get; set; }
+        public PrescriptionItem PrescriptionItem { get; set; } = null!;
+        public Patient Patient { get; set; } = null!;
     }
 }

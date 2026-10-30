@@ -15,5 +15,10 @@ namespace MedicationAdherence.DAL.Models
         public string? DiagnosisNotes { get; set; }
         public DateTime IssuedDate { get; set; }
         public enStatus Status { get; set; }
+        public Patient Patient { get; set; } = null!;
+        public Doctor Doctor { get; set; } = null!;
+
+        public ICollection<PrescriptionItem> PrescriptionItems { get; set; }
+            = new List<PrescriptionItem>();
     }
 }
