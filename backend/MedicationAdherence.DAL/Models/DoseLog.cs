@@ -13,7 +13,7 @@ namespace MedicationAdherence.DAL.Models
         public int PrescriptionItemId { get; set; }
         public int PatientId { get; set; }
         public DateTime ScheduledDateTime { get; set; }
-        public enStatus Status { get; set; }
+        public enDoseStatus Status { get; set; }
         public DateTime? TakenAt { get; set; }
         public string? SkipReason { get; set; }
         public DateTime CreatedAt { get; set; }
