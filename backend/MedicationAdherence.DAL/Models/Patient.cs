@@ -15,5 +15,10 @@ namespace MedicationAdherence.DAL.Models
         public string? MedicalNotes { get; set; }
         public bool IsActive { get; set; }
 
+        public Person Person { get; set; } = null!;
+        public Doctor PrimaryDoctor { get; set; } = null!;
+        public ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public ICollection<DoseLog> DoseLogs { get; set; } = new List<DoseLog>();
+
     }
 }

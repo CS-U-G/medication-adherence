@@ -10,7 +10,9 @@ namespace MedicationAdherence.DAL.Models
     {
         public int ScheduleTimeId { get; set; }
         public int PrescriptionItemId { get; set; }
-        public byte DoseOrder { get; set; }
-        public DateTime ReminderTime { get; set; }
+        public short DoseOrder { get; set; }
+        public TimeOnly ReminderTime { get; set; }
+
+        public PrescriptionItem PrescriptionItem { get; set; } = null!;
     }
 }
