@@ -14,5 +14,8 @@ namespace MedicationAdherence.DAL.Models
         public char Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public User? User { get; set; }
+        public Patient? Patient { get; set; }
     }
 }

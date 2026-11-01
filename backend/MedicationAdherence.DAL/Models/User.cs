@@ -15,5 +15,8 @@ namespace MedicationAdherence.DAL.Models
         public string PasswordHash { get; set; }
         public enUserRole Role { get; set; }
         public bool IsActive { get; set; }
+
+        public Person Person { get; set; } = null!;
+        public Doctor? Doctor { get; set; }
     }
 }

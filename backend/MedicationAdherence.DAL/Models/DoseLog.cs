@@ -9,7 +9,7 @@ namespace MedicationAdherence.DAL.Models
 {
     public class DoseLog
     {
-        public int DoseLogId { get; set; }
+        public long DoseLogId { get; set; }
         public int PrescriptionItemId { get; set; }
         public int PatientId { get; set; }
         public DateTime ScheduledDateTime { get; set; }
@@ -17,5 +17,8 @@ namespace MedicationAdherence.DAL.Models
         public DateTime? TakenAt { get; set; }
         public string? SkipReason { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public PrescriptionItem PrescriptionItem { get; set; } = null!;
+        public Patient Patient { get; set; } = null!;
     }
 }
