@@ -107,7 +107,6 @@ namespace MedicationAdherence.DAL.Data
                 entity.ToTable("PrescriptionItems");
                 entity.HasKey(pi => pi.PrescriptionItemId);
                 entity.Property(pi => pi.PrescribedMedName).IsRequired().HasMaxLength(120);
-                entity.Property(pi => pi.ActualMedName).HasMaxLength(120);
                 entity.Property(pi => pi.Dosage).IsRequired().HasMaxLength(100);
                 entity.Property(pi => pi.Instructions).HasMaxLength(300);
 

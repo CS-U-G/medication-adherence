@@ -13,7 +13,6 @@ namespace MedicationAdherence.DAL.Models
         public int PrescriptionId { get; set; }
         public int? MedicationId { get; set; }
         public string PrescribedMedName { get; set; }
-        public string? ActualMedName { get; set; }
         public enMedicationSource MedicationSource { get; set; }
         public string Dosage {  get; set; }
         public short FrequencyPerDay { get; set; }
