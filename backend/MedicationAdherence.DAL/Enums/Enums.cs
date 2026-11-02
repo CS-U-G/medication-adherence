@@ -21,9 +21,8 @@ namespace MedicationAdherence.DAL.Enums
 
     public enum enMedicationSource : short
     {
-        PrescribedByDoctor = 1,  
-        SubstitutedByPatient = 2,
-        AddedByPatient = 3       
+        PrescribedByDoctor = 1,
+        AddedByPatient = 2       
     }
 
     public enum enScheduleStatus : short
