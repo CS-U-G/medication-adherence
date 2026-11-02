@@ -9,9 +9,9 @@ namespace MedicationAdherence.DAL.Models
     public class Medication
     {
         public int MedicationId { get; set; }
-        public string TradeName { get; set; }
-        public string ScientificName { get; set; }
-        public string DosageForm { get; set; }
+        public string TradeName { get; set; } = string.Empty;
+        public string ScientificName { get; set; } = string.Empty;
+        public string DosageForm { get; set; } = string.Empty;
         public string? Strength { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }

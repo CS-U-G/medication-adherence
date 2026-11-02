@@ -5,24 +5,45 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MedicationAdherence.DAL.Data;
+using Microsoft.EntityFrameworkCore;
+using MedicationAdherence.DAL.Interfaces;
 
 namespace MedicationAdherence.DAL.Repositories
 {
-    internal class UserRepository
+    public class UserRepository : IUserRepository
     {
-        public static void GetWebUserByEmailAsync(string email)
-        {
+        private readonly ApplicationDbContext _context;
 
+        public UserRepository(ApplicationDbContext context ) 
+        {
+            _context = context;
         }
 
-        public static void GetUserByIdWithPersonAsync(int userId)
+        public async Task<User?> GetWebUserByEmailAsync(string email)
         {
-
+            return await _context.Users.Include(u=> u.Person).Include(u => u.Doctor).FirstOrDefaultAsync(u=> u.Email == email);
         }
 
-        public static bool AddPersonAndDoctorAsync(Person person, User user, Doctor doctor)
+        public async Task<Doctor> AddPersonAndDoctorAsync(Person person, User user, Doctor doctor)
         {
-            return false;
+            user.Person = person;
+            doctor.User = user;
+
+            await _context.Doctors.AddAsync(doctor);
+            await _context.SaveChangesAsync();
+
+            return doctor;
+        }
+
+        public async Task<User> AddPersonAndAdminAsync(Person person, User user)
+        {
+            user.Person = person;
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            return user;
         }
     }
 }

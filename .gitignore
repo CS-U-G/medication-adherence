@@ -126,3 +126,6 @@ app.*.symbols
 .vs/
 *.user
 *.suo
+
+# Connection String
+\backend\MedicationAdherence.Api\appsettings.Development.json
