@@ -45,5 +45,41 @@ namespace MedicationAdherence.DAL.Repositories
 
             return user;
         }
+
+        public async Task<User?> GetUserByIdWithPersonAsync(int userId)
+        {
+            return await _context.Users.Include(p=> p.Person).Include(d=> d.Doctor).FirstOrDefaultAsync(u=> u.UserId == userId);
+        }
+
+        public async Task<bool> ToggleUserActiveStatusAsync(int userId, bool isActive)
+        {
+            var affectedRows = await _context.Users.Where(u => u.UserId == userId)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.IsActive, isActive));
+
+            return affectedRows > 0;
+        }
+
+        public async Task<List<User>> GetAllDoctorsWithDetailsAsync()
+        {
+            return await _context.Users.Include(p=>p.Person).Include(d=>d.Doctor).Where(d=>d.Role == Enums.enUserRole.Doctor).ToListAsync();
+        }
+
+        public async Task<bool> UpdateDoctorDetailsAsync(int doctorId, string fullName, string? phoneNumber, string specialization, string? licenseNumber)
+        {
+            var doctor = await _context.Doctors.Include(d => d.User).ThenInclude(u => u.Person).FirstOrDefaultAsync(d => d.DoctorId == doctorId);
+
+            if (doctor == null)
+                return false;
+            
+            doctor.User.Person.FullName = fullName;
+            doctor.User.Person.PhoneNumber = phoneNumber;
+
+            doctor.Specialization = specialization;
+            doctor.LicenseNumber = licenseNumber;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

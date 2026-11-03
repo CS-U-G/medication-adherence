@@ -14,5 +14,13 @@ namespace MedicationAdherence.DAL.Interfaces
         Task<Doctor> AddPersonAndDoctorAsync(Person person, User user, Doctor doctor);
 
         Task<User> AddPersonAndAdminAsync(Person person, User user);
+
+        Task<User?> GetUserByIdWithPersonAsync(int userId);
+
+        Task <bool> ToggleUserActiveStatusAsync(int userId, bool isActive);
+
+        Task<List<User>> GetAllDoctorsWithDetailsAsync();
+
+        Task<bool> UpdateDoctorDetailsAsync(int doctorId, string fullName, string? phoneNumber, string specialization, string? licenseNumber);
     }
 }

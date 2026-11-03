@@ -18,6 +18,9 @@ namespace MedicationAdherence.BLL.DependencyInjection
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IAuthService, AuthService>();
+
+            services.AddScoped<IUserService, UserService>();
+
             
             
             // services.AddScoped<IPatientRepository, PatientRepository>();
