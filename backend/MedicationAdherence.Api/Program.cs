@@ -11,17 +11,17 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 
 string connString = builder.Configuration
     .GetConnectionString("MedicationAdherenceDB")
     ?? throw new InvalidOperationException(
         "Database connection string is missing."
-    ); 
+    );
 
 builder.Services.AddDependencyInjections(connString);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 

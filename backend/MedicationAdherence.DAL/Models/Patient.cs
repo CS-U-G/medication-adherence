@@ -10,7 +10,7 @@ namespace MedicationAdherence.DAL.Models
     {
         public int PatientId { get; set; }
         public int PersonId { get; set; }
-        public string PatientAccessCode { get; set; }
+        public string PatientAccessCode { get; set; } = string.Empty;
         public int PrimaryDoctorId { get; set; }
         public string? MedicalNotes { get; set; }
         public bool IsActive { get; set; }

@@ -1,0 +1,26 @@
+﻿using MedicationAdherence.DAL.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MedicationAdherence.DAL.Interfaces
+{
+    public interface IUserRepository
+    {
+        Task<User?> GetWebUserByEmailAsync(string email);
+        
+        Task<Doctor> AddPersonAndDoctorAsync(Person person, User user, Doctor doctor);
+
+        Task<User> AddPersonAndAdminAsync(Person person, User user);
+
+        Task<User?> GetUserByIdWithPersonAsync(int userId);
+
+        Task <bool> ToggleUserActiveStatusAsync(int userId, bool isActive);
+
+        Task<List<User>> GetAllDoctorsWithDetailsAsync();
+
+        Task<bool> UpdateDoctorDetailsAsync(int doctorId, string fullName, string? phoneNumber, string specialization, string? licenseNumber);
+    }
+}
