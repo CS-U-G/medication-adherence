@@ -128,4 +128,4 @@ app.*.symbols
 *.suo
 
 # Connection String
-\backend\MedicationAdherence.Api\appsettings.Development.json
+/backend/MedicationAdherence.Api/appsettings.Development.json
