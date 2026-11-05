@@ -8,12 +8,12 @@ namespace MedicationAdherence.BLL.Services
     {
         public string HashPassword(string plainPassword)
         {
-            return BCrypt.Net.BCrypt.HashPassword(plainPassword);
+            return BCrypt.Net.BCrypt.EnhancedHashPassword(plainPassword);
         }
 
         public bool VerifyPassword(string plainPassword, string hashedPasswordFromDb)
         {
-            return BCrypt.Net.BCrypt.Verify(plainPassword, hashedPasswordFromDb);
+            return BCrypt.Net.BCrypt.EnhancedVerify(plainPassword, hashedPasswordFromDb);
         }
     }
 }
