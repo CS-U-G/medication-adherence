@@ -23,11 +23,16 @@ namespace MedicationAdherence.BLL.DependencyInjection
 
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-            // services.AddScoped<IPatientRepository, PatientRepository>();
+            services.AddScoped<IPatientService, PatientService>();
+
+            services.AddScoped<IPatientRepository, PatientRepository>();
+            
+            
+            
             // services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
             // services.AddScoped<IDoseLogRepository, DoseLogRepository>();
 
-           
+
             // services.AddScoped<IPatientService, PatientService>();
             // services.AddScoped<IPrescriptionService, PrescriptionService>();
             // services.AddScoped<IDoseTrackingService, DoseTrackingService>();
