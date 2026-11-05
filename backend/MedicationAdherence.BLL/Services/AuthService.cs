@@ -4,10 +4,6 @@ using MedicationAdherence.DAL.Enums;
 using MedicationAdherence.DAL.Interfaces;
 using MedicationAdherence.DAL.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MedicationAdherence.BLL.Services
 {
@@ -24,7 +20,12 @@ namespace MedicationAdherence.BLL.Services
         {
             var user = await _userRepository.GetWebUserByEmailAsync(dto.Email);
 
-            if (user == null || user.PasswordHash != dto.Password)
+            if (user == null)
+                return null;
+
+            var verifyPassword = PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash);
+
+            if (!verifyPassword)
                 return null;
             
 
@@ -63,7 +64,7 @@ namespace MedicationAdherence.BLL.Services
             var user = new User
             {
                 Email = dto.Email,
-                PasswordHash = dto.Password,
+                PasswordHash = PasswordHasher.HashPassword(dto.Password),
                 Role = enUserRole.Doctor,
                 IsActive = true
             };
