@@ -11,7 +11,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-
 string connString = builder.Configuration
     .GetConnectionString("MedicationAdherenceDB")
     ?? throw new InvalidOperationException(

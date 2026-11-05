@@ -4,27 +4,30 @@ using MedicationAdherence.DAL.Enums;
 using MedicationAdherence.DAL.Interfaces;
 using MedicationAdherence.DAL.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MedicationAdherence.BLL.Services
 {
     internal class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public AuthService(IUserRepository userRepository)
+        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<AuthResponseDto?> LoginWebUserAsync(WebLoginRequestDto dto)
         {
             var user = await _userRepository.GetWebUserByEmailAsync(dto.Email);
 
-            if (user == null || user.PasswordHash != dto.Password)
+            if (user == null)
+                return null;
+
+            var verifyPassword = _passwordHasher.VerifyPassword(dto.Password, user.PasswordHash);
+
+            if (!verifyPassword)
                 return null;
             
 
@@ -63,7 +66,7 @@ namespace MedicationAdherence.BLL.Services
             var user = new User
             {
                 Email = dto.Email,
-                PasswordHash = dto.Password,
+                PasswordHash = _passwordHasher.HashPassword(dto.Password),
                 Role = enUserRole.Doctor,
                 IsActive = true
             };
