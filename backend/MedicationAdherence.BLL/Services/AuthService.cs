@@ -10,10 +10,12 @@ namespace MedicationAdherence.BLL.Services
     internal class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public AuthService(IUserRepository userRepository)
+        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<AuthResponseDto?> LoginWebUserAsync(WebLoginRequestDto dto)
@@ -23,7 +25,7 @@ namespace MedicationAdherence.BLL.Services
             if (user == null)
                 return null;
 
-            var verifyPassword = PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash);
+            var verifyPassword = _passwordHasher.VerifyPassword(dto.Password, user.PasswordHash);
 
             if (!verifyPassword)
                 return null;
@@ -64,7 +66,7 @@ namespace MedicationAdherence.BLL.Services
             var user = new User
             {
                 Email = dto.Email,
-                PasswordHash = PasswordHasher.HashPassword(dto.Password),
+                PasswordHash = _passwordHasher.HashPassword(dto.Password),
                 Role = enUserRole.Doctor,
                 IsActive = true
             };
