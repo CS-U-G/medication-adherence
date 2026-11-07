@@ -1,5 +1,7 @@
-﻿using MedicationAdherence.BLL.DTOs;
+﻿using MedicationAdherence.Api.Validators;
+using MedicationAdherence.BLL.DTOs;
 using MedicationAdherence.BLL.Interfaces;
+using MedicationAdherence.BLL.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
