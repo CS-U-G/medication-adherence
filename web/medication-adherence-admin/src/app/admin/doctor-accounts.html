@@ -1,0 +1,73 @@
+<header class="page-heading">
+  <div>
+    <span class="eyebrow">Access management</span>
+    <h1>Doctor accounts</h1>
+    <p>Create staff accounts and manage who can access the doctor workspace.</p>
+  </div>
+  <a class="btn" routerLink="new"><mm-icon name="plus" /> Create doctor</a>
+</header>
+
+<section class="card directory" aria-labelledby="directory-title">
+  <header class="directory-heading">
+    <div>
+      <h2 id="directory-title">All doctors</h2>
+      <p aria-live="polite">{{ results().length }} of {{ data.doctors().length }} accounts</p>
+    </div>
+    <div class="directory-filters">
+      <label class="directory-search">
+        <span class="sr-only">Search doctor accounts</span>
+        <mm-icon name="search" />
+        <input type="search" placeholder="Search name, email or specialty" [value]="query()" (input)="query.set(search.value)" #search />
+      </label>
+      <label>
+        <span class="sr-only">Filter by account status</span>
+        <select [value]="status()" (change)="status.set(accountStatus.value)" #accountStatus>
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  @if (results().length) {
+    <table class="management-table" role="table" aria-labelledby="directory-title">
+      <thead role="rowgroup">
+        <tr role="row">
+          <th role="columnheader" scope="col">Doctor</th>
+          <th role="columnheader" scope="col">Specialty</th>
+          <th role="columnheader" scope="col">Status</th>
+          <th role="columnheader" scope="col"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody role="rowgroup">
+        @for (doctor of results(); track doctor.id) {
+          <tr role="row">
+            <td role="cell" class="record-cell">
+              <span class="avatar" aria-hidden="true">{{ initials(doctor.name) }}</span>
+              <span><strong>{{ doctor.name }}</strong><small>{{ doctor.email }}</small></span>
+            </td>
+            <td role="cell" data-label="Specialty">{{ doctor.specialty }}</td>
+            <td role="cell" data-label="Status"><span class="badge" [class.badge-green]="doctor.active">{{ doctor.active ? 'Active' : 'Inactive' }}</span></td>
+            <td role="cell" class="row-actions">
+              <a class="text-link" [routerLink]="[doctor.id]" [attr.aria-label]="'View ' + doctor.name">View details <mm-icon name="chevron" /></a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <div class="empty-state">
+      <span class="management-mark" aria-hidden="true"><mm-icon name="users" /></span>
+      @if (query() || status() !== 'all') {
+        <h3>No matching doctor accounts</h3>
+        <p>Try a different search or clear your filters.</p>
+        <button class="btn btn-secondary" type="button" (click)="query.set(''); status.set('all'); search.focus()">Clear filters</button>
+      } @else {
+        <h3>No doctor accounts yet</h3>
+        <p>Create an account to give a doctor access to the portal.</p>
+        <a class="btn" routerLink="new"><mm-icon name="plus" /> Create doctor</a>
+      }
+    </div>
+  }
+</section>

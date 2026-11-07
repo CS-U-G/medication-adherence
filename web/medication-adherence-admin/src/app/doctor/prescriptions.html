@@ -1,0 +1,44 @@
+<header class="page-heading">
+  <div><div class="eyebrow">Patient care</div><h1>Prescriptions</h1><p>Review prescriptions issued to patients in your roster.</p></div>
+  <a class="btn" routerLink="/doctor/prescriptions/new"><mm-icon name="plus" /> New prescription</a>
+</header>
+
+<section class="card" aria-labelledby="prescription-list">
+  <div class="list-head">
+    <div class="panel-heading"><div><h2 id="prescription-list">Issued prescriptions</h2><p>{{ results().length }} {{ results().length === 1 ? 'record' : 'records' }}</p></div></div>
+    <label class="field search-single">Search prescriptions
+      <input #search type="search" placeholder="Patient, medication, or ID" [value]="query()" (input)="query.set(search.value)" />
+    </label>
+  </div>
+  @if (results().length) {
+    <table class="responsive-table">
+      <thead><tr><th scope="col">Patient</th><th scope="col">Medication</th><th scope="col">Issued</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Open patient record</span></th></tr></thead>
+      <tbody>
+        @for (row of results(); track row.prescription.id; let index = $index) {
+          <tr>
+            <td><a class="patient-identity" [routerLink]="['/doctor/patients', row.prescription.patientId]">
+              <span class="avatar" [class.alt]="index % 3 === 1" [class.violet]="index % 3 === 2" aria-hidden="true">{{ initials(row.name) }}</span>
+              <span><strong>{{ row.name }}</strong><small>{{ row.prescription.id }}</small></span>
+            </a></td>
+            <td data-label="Medication">
+              {{ row.prescription.items[0].medicationName }}@if (row.prescription.items.length > 1) { <small class="inline-extra">+{{ row.prescription.items.length - 1 }} more</small> }
+            </td>
+            <td data-label="Issued">{{ row.prescription.issuedAt | date:'mediumDate' }}</td>
+            <td data-label="Status"><span class="badge" [class.badge-green]="row.prescription.status === 'Active'">{{ row.prescription.status }}</span></td>
+            <td class="row-action"><a class="text-link" [routerLink]="['/doctor/patients', row.prescription.patientId]">Patient record <mm-icon name="chevron" /></a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <div class="empty-state">
+      @if (query()) {
+        <h3>No matching prescriptions</h3><p>Try a different patient, medication, or prescription ID.</p>
+        <button class="btn btn-secondary" type="button" (click)="query.set('')">Clear search</button>
+      } @else {
+        <h3>No prescriptions issued</h3><p>Start a prescription to set medication, dose, frequency, and duration.</p>
+        <a class="btn" routerLink="/doctor/prescriptions/new">New prescription</a>
+      }
+    </div>
+  }
+</section>

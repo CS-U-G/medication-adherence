@@ -1,0 +1,124 @@
+:is(mm-patient-directory, mm-patient-registration, mm-patient-detail, mm-prescriptions, mm-prescription-builder, mm-adherence-report) {
+  display: block;
+  min-width: 0;
+
+  .back-link {
+    margin-bottom: 16px;
+
+    mm-icon { transform: rotate(180deg); }
+  }
+
+  .list-head { padding: 22px 24px; }
+  .list-head .panel-heading:last-child { margin-bottom: 0; }
+  .list-filters { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, .5fr); gap: 14px; }
+  .search-single { max-width: 460px; }
+  .responsive-table td { overflow-wrap: anywhere; }
+  .row-action { text-align: right; }
+  .row-action .text-link { white-space: nowrap; }
+
+  .patient-identity {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    color: var(--ink);
+
+    > span:last-child { min-width: 0; }
+    small { display: block; margin-top: 2px; overflow-wrap: anywhere; }
+  }
+
+  a.patient-identity:hover strong { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+  .inline-extra { display: block; }
+  .detail-layout { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(220px, 1fr); gap: 18px; align-items: start; }
+  .form-section .panel-heading { margin-bottom: 0; }
+  .wide { grid-column: 1 / -1; }
+  .end-actions { justify-content: flex-end; }
+  .registration-notice { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+  .help-card h2 { font-size: 20px; margin: 13px 0 8px; }
+  .help-card ol { padding-left: 20px; color: var(--muted-strong); }
+  .help-card li + li { margin-top: 7px; }
+  .help-card .text-link { margin-top: 13px; }
+  .dialog-icon { margin-bottom: 14px; }
+  .access-code { margin: 16px 0 8px; display: flex; align-items: stretch; gap: 8px; }
+  .access-code input { font: 800 16px/1.2 var(--font); letter-spacing: .08em; color: var(--green-deep); background: var(--soft); min-width: 0; }
+  .access-code button { flex: 0 0 auto; }
+  .copy-feedback { min-height: 1.5em; color: var(--green-deep); font-weight: 600; }
+
+  .profile-data {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px 20px;
+    margin: 0;
+
+    dt { font-size: 12px; color: var(--muted); }
+    dd { margin: 4px 0 0; font-weight: 650; overflow-wrap: anywhere; }
+  }
+
+  .multiline { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .quick-rate { display: flex; align-items: center; gap: 10px; margin-top: 11px; }
+  .quick-rate strong { font-size: 30px; letter-spacing: -.05em; line-height: 1; }
+  .history { margin-top: 18px; }
+  .prescription-record { border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .prescription-record + .prescription-record { margin-top: 12px; }
+  .record-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .record-head h3 { font-size: 16px; overflow-wrap: anywhere; }
+  .record-head p, .medication-list p { font-size: 12px; margin-top: 4px; }
+  .medication-list, .review-medications { list-style: none; margin: 14px 0 0; padding: 0; }
+  .medication-list li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding: 10px 0 0; }
+  .medication-list li + li { margin-top: 10px; }
+  .medication-list .metric-icon { width: 34px; height: 34px; }
+  .record-notes { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 12px; }
+
+  .builder-items { display: grid; gap: 12px; }
+  .builder-item { min-inline-size: 0; margin: 0; position: relative; padding: 12px 14px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--soft); }
+  .builder-item legend { font-weight: 800; padding-inline: 5px; color: var(--green-deep); }
+  .item-remove { position: absolute; right: 10px; top: -16px; min-height: 25px; padding: 2px 8px; background: var(--surface); font-size: 12px; }
+  .add-item { justify-self: start; }
+  .review-medications li { display: grid; gap: 4px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .review-medications { margin-bottom: 12px; }
+
+  .report-filters, .report-stats, .report-chart { margin-bottom: 16px; }
+  .report-filters .list-filters { max-width: 630px; }
+  .report-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .report-stats strong { display: block; font-size: 29px; letter-spacing: -.045em; margin: 5px 0; line-height: 1.15; }
+  .report-stats p { font-size: 12px; }
+  .report-empty .metric-icon { margin: 0 auto 13px; }
+
+  @media (max-width: 1000px) {
+    .responsive-table thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+    .responsive-table, .responsive-table tbody { display: block; }
+    .responsive-table tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 14px;
+      padding: 14px 18px;
+      border-top: 1px solid var(--line);
+    }
+    .responsive-table td { display: block; padding: 0; border: 0; }
+    .responsive-table td:first-child, .responsive-table .row-action { grid-column: 1 / -1; }
+    .responsive-table td[data-label]::before { content: attr(data-label); display: block; font-size: 11px; color: var(--muted); }
+  }
+
+  @media (max-width: 830px) {
+    .detail-layout { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .list-head { padding: 16px 17px; }
+    .list-filters, .profile-data { grid-template-columns: 1fr; }
+    .medication-list li { grid-template-columns: auto minmax(0, 1fr); }
+    .medication-list .badge { grid-column: 2; }
+    .report-stats { grid-template-columns: 1fr; gap: 8px; }
+    .report-stats article { display: grid; align-items: center; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 8px; padding-block: 10px; }
+    .report-stats strong { grid-column: 2; grid-row: 1 / span 2; }
+    .report-stats p { grid-column: 1; }
+    .report-chart .panel-heading { flex-wrap: wrap; }
+  }
+}
