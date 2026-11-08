@@ -12,7 +12,8 @@ namespace MedicationAdherence.BLL.DependencyInjection
     {
         public static IServiceCollection AddDependencyInjections(this IServiceCollection services, string connectionString)
         {
-            
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
             services.AddScoped<IUserRepository, UserRepository>();
@@ -26,16 +27,10 @@ namespace MedicationAdherence.BLL.DependencyInjection
             services.AddScoped<IPatientService, PatientService>();
 
             services.AddScoped<IPatientRepository, PatientRepository>();
-            
-            
-            
-            // services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
-            // services.AddScoped<IDoseLogRepository, DoseLogRepository>();
 
+            services.AddScoped<IMedicationRepository, MedicationRepository>();
 
-            // services.AddScoped<IPatientService, PatientService>();
-            // services.AddScoped<IPrescriptionService, PrescriptionService>();
-            // services.AddScoped<IDoseTrackingService, DoseTrackingService>();
+            services.AddScoped<IMedicationService, MedicationService>();
 
             return services;
         }

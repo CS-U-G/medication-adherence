@@ -19,6 +19,8 @@ namespace MedicationAdherence.Api.Controllers
         }
 
         [HttpPost("web-login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> WebLogin([FromBody] WebLoginRequestDto dto)
         {
             var result = await _authService.LoginWebUserAsync(dto);
@@ -31,6 +33,8 @@ namespace MedicationAdherence.Api.Controllers
         }
 
         [HttpPost("SignIn")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> SignIn([FromBody] SignInDoctorDto dto)
         {
             var result = await _authService.SignInWebUserAsync(dto);
