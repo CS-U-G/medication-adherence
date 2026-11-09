@@ -19,9 +19,9 @@ namespace MedicationAdherence.BLL.Services
             _medicationRepository = medicationRepository;
         }
 
-        public async Task<MedicationDto?> AddMedicationAsync(CreateMedicationDto dto)
+        public async Task<MedicationDto> AddMedicationAsync(CreateMedicationDto dto)
         {
-            var medication = new Medication
+            Medication medication = new Medication
             {
                 TradeName = dto.TradeName.Trim(),
                 ScientificName = dto.ScientificName,
@@ -31,7 +31,7 @@ namespace MedicationAdherence.BLL.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            var savedMedication = await _medicationRepository.AddMedicationAsync(medication);
+            Medication savedMedication = await _medicationRepository.AddMedicationAsync(medication);
 
             return MapToDto(savedMedication);
         }

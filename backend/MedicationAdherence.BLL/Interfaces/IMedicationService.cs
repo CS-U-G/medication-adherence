@@ -6,7 +6,7 @@ namespace MedicationAdherence.BLL.Interfaces
 {
     public interface IMedicationService
     {
-        Task<MedicationDto?> AddMedicationAsync(CreateMedicationDto dto);
+        Task<MedicationDto> AddMedicationAsync(CreateMedicationDto dto);
         Task<MedicationDto?> GetMedicationByIdAsync(int medicationId);
         Task<List<MedicationDto>> GetAllMedicationsAsync();
         Task<List<MedicationDto>> GetActiveMedicationsAsync();
