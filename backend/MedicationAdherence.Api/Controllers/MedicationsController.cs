@@ -21,6 +21,7 @@ namespace MedicationAdherence.Api.Controllers
         [HttpPost("AddNew")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddMedication([FromBody] CreateMedicationDto dto)
         {
             if (!ValidationHelper.IsNotEmpty(dto.TradeName) 
@@ -30,9 +31,15 @@ namespace MedicationAdherence.Api.Controllers
                 return BadRequest(new { message = "Failed to add the medication. Please make sure to enter the medication's brand name." }); ;
             }
 
-            var result = await _medicationService.AddMedicationAsync(dto);
-
-            return Ok(result);
+            try
+            {
+                MedicationDto result = await _medicationService.AddMedicationAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"An unexpected error occurred on the server: {ex.Message}");
+            }
         }
 
         [HttpGet("All")]
@@ -40,6 +47,7 @@ namespace MedicationAdherence.Api.Controllers
         public async Task<IActionResult> GetAllMedications()
         {
             var medications = await _medicationService.GetAllMedicationsAsync();
+
             return Ok(medications);
         }
 
@@ -63,15 +71,19 @@ namespace MedicationAdherence.Api.Controllers
 
             var medication = await _medicationService.GetMedicationByIdAsync(id);
 
+            if (medication == null)
+                return NotFound(new {message = "No medication found." });
+
             return Ok(medication);
         }
 
         [HttpPut("Medication/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateMedication(int id, [FromBody] CreateMedicationDto dto)
         {
-            if (!ValidationHelper.IsNotEmpty(dto.TradeName)
+            if (!ValidationHelper.IsValidId(id) || !ValidationHelper.IsNotEmpty(dto.TradeName)
                 || !ValidationHelper.IsNotEmpty(dto.ScientificName)
                 || !ValidationHelper.IsNotEmpty(dto.DosageForm))
             {
@@ -79,6 +91,9 @@ namespace MedicationAdherence.Api.Controllers
             }
 
             bool isUpdated = await _medicationService.UpdateMedicationAsync(id, dto);
+
+            if (!isUpdated)
+                return NotFound(new { message = "Not Updated Successfully" });
 
             return Ok(new { message = "Successfully updated." });
         }
