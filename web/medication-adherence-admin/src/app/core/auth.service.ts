@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, Injector, signal } from '@angular/core';
 import { MEDMINDER_CONFIG } from './app-mode';
 import { adapterFor, demoAdmin } from './auth-adapters';
 import { DEMO_DOCTOR_ID, DEMO_SESSION_KEY } from './demo-fixtures';
@@ -9,7 +9,8 @@ import { Role, Session } from './models';
 export class AuthService {
   private readonly config = inject(MEDMINDER_CONFIG);
   private readonly adapter = adapterFor(this.config.mode);
-  private readonly store = inject(DemoStore);
+  private readonly injector = inject(Injector);
+  private get store(): DemoStore { return this.injector.get(DemoStore); }
   private readonly current = signal<Session | null>(this.restore());
   readonly session = this.current.asReadonly();
   readonly mode = signal(this.config.mode).asReadonly();

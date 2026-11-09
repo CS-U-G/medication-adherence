@@ -1,11 +1,11 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { MEDMINDER_CONFIG } from './app-mode';
 import { DEMO_ADMIN_EMAIL, DEMO_PASSWORD } from './demo-fixtures';
 import { matchesDemoPassword } from './demo-password';
 import { DemoStore } from './demo-store';
 import { AppMode, Role, Session } from './models';
+import { MedMinderApi } from './api.service';
+import { WebLoginResponse } from './api.models';
 
 type Identity = Pick<Session, 'id' | 'name' | 'email' | 'role'>;
 
@@ -37,15 +37,6 @@ export class DemoAuthAdapter implements AuthAdapter {
   }
 }
 
-interface WebLoginResponse {
-  userId: number;
-  doctorId: number | null;
-  fullName: string;
-  email: string;
-  role: 'Admin' | 'Doctor';
-  message: string;
-}
-
 function staffRole(role: WebLoginResponse['role']): Role {
   if (role === 'Admin') return 'admin';
   if (role === 'Doctor') return 'doctor';
@@ -54,14 +45,10 @@ function staffRole(role: WebLoginResponse['role']): Role {
 
 @Injectable({ providedIn: 'root' })
 export class HttpAuthAdapter implements AuthAdapter {
-  private readonly http = inject(HttpClient);
-  private readonly config = inject(MEDMINDER_CONFIG);
+  private readonly api = inject(MedMinderApi);
 
   async signIn(email: string, password: string): Promise<Identity> {
-    const baseUrl = this.config.apiBaseUrl.replace(/\/$/, '');
-    const result = await firstValueFrom(
-      this.http.post<WebLoginResponse>(`${baseUrl}/api/auth/web-login`, { email, password }),
-    ).catch((error: unknown) => {
+    const result = await this.api.login({ email, password }).catch((error: unknown) => {
       if (error instanceof HttpErrorResponse) {
         if (error.status === 0) throw new Error('The staff sign-in service could not be reached. Check the API connection and try again.');
         if (error.status === 401) throw new Error('The email or password was rejected, or the account is inactive.');

@@ -2,6 +2,30 @@ server {
     listen 0.0.0.0:${PORT};
     root /usr/share/nginx/html;
     index index.html;
+    server_tokens off;
+    include /etc/nginx/snippets/medminder-security.conf;
+
+    location = /app-config.json {
+        include /etc/nginx/snippets/medminder-security.conf;
+        add_header Cache-Control "no-store";
+        try_files $uri =404;
+    }
+
+    location = /index.html {
+        include /etc/nginx/snippets/medminder-security.conf;
+        add_header Cache-Control "no-cache";
+    }
+
+    location ~* \.(?:js|css|woff2)$ {
+        include /etc/nginx/snippets/medminder-security.conf;
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Never return Angular HTML as a successful API response.
+    location /api/ { return 404; }
+    location = /health { return 404; }
 
     location = /healthz {
         default_type text/plain;

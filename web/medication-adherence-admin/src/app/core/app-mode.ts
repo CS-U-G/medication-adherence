@@ -9,5 +9,5 @@ export interface MedMinderConfig {
 // Keep the URL empty when the API is served on the same origin.
 export const MEDMINDER_CONFIG = new InjectionToken<MedMinderConfig>('MedMinder configuration', {
   providedIn: 'root',
-  factory: () => ({ mode: 'demo', apiBaseUrl: '' }),
+  factory: () => ({ mode: 'live', apiBaseUrl: '' }),
 });

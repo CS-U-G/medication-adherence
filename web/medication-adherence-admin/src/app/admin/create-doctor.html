@@ -30,7 +30,7 @@
         <label for="doctor-gender">Gender <span aria-hidden="true">*</span></label>
         <select id="doctor-gender" formControlName="gender" required [attr.aria-invalid]="invalid('gender')" [attr.aria-describedby]="invalid('gender') ? 'doctor-gender-error' : null">
           <option value="" disabled>Select gender</option>
-          <option>Female</option><option>Male</option><option>Other</option><option>Prefer not to say</option>
+          <option>Female</option><option>Male</option>
         </select>
         @if (invalid('gender')) { <small class="field-error" id="doctor-gender-error">Select an option.</small> }
       </div>

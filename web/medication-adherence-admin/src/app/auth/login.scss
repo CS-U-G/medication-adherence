@@ -24,3 +24,5 @@ form label[for="staff-password"]{margin-top:5px}
 .login-access mm-icon{margin-top:2px}.login-access strong{color:var(--ink)}
 .login-footer{text-align:center;padding:14px;color:var(--muted);font-size:12px}
 @media(max-width:750px){.login-main{grid-template-columns:1fr;width:min(480px,calc(100% - 32px));margin:22px auto;gap:14px}.login-story{order:2;gap:16px}.story-copy h2{font-size:30px;margin:8px 0}.story-copy p{max-width:none}.story-roles{display:none}.login-header{height:62px;padding:0 16px}.login-header>a{font-size:12px}.login-form h1{font-size:33px}}
+:host .access-notice{margin-top:20px;font-size:13px}
+:host .access-notice p{margin:6px 0 10px;color:var(--green-deep)}

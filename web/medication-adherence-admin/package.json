@@ -5,9 +5,13 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "configure": "node scripts/configure.mjs",
+    "test": "ng test --watch=false",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,
+  "engines": { "node": "^22.22.3 || ^24.15.0 || >=26.0.0" },
   "packageManager": "npm@11.6.2",
   "dependencies": {
     "@angular/common": "^22.2.0",

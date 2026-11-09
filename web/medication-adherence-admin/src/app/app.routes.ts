@@ -8,6 +8,8 @@ import { ErrorPage } from './shared/error-page';
 export const routes: Routes = [
   {path:'',pathMatch:'full',component:Home,title:'MedMinder · Medication adherence'},
   {path:'login',loadComponent:()=>import('./auth/login').then(m=>m.Login),title:'Staff sign in'},
+  {path:'register',loadComponent:()=>import('./auth/register-doctor').then(m=>m.RegisterDoctor),title:'Create doctor account · MedMinder'},
+  {path:'availability',loadComponent:()=>import('./public/service-status').then(m=>m.ServiceStatus),title:'MedMinder · Service availability'},
   {path:'doctor',component:PortalShell,canActivate:[roleGuard('doctor')],canActivateChild:[roleGuard('doctor')],children:[
     {path:'',pathMatch:'full',title:'Doctor overview',loadComponent:()=>import('./doctor/doctor-overview').then(m=>m.DoctorOverview)},
     {path:'settings',title:'Account settings',component:Settings},
