@@ -15,5 +15,6 @@ namespace MedicationAdherence.BLL.DTOs
         public string Email { get; set; } = string.Empty;
         public enUserRole Role { get; set; }
         public string Message { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
     }
 }

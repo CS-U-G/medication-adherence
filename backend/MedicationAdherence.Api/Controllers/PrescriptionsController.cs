@@ -3,11 +3,13 @@ using MedicationAdherence.BLL.DTOs;
 using MedicationAdherence.BLL.Interfaces;
 using MedicationAdherence.DAL.Enums;
 using MedicationAdherence.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicationAdherence.Api.Controllers
 {
+    [Authorize]
     [Route("api/Prescriptions")]
     [ApiController]
     public class PrescriptionsController : ControllerBase
@@ -19,6 +21,7 @@ namespace MedicationAdherence.Api.Controllers
             _prescriptionService = prescriptionService;
         }
 
+        [Authorize(Roles = "Doctor")]
         [HttpPost("AddNew")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,6 +56,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Doctor")]
         [HttpGet("Prescription/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -74,6 +78,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(prescription);
         }
 
+        [Authorize(Roles = "Doctor,Patient")]
         [HttpGet("patient/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -86,6 +91,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(prescriptions);
         }
 
+        [Authorize(Roles = "Doctor")]
         [HttpGet("doctor/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -98,6 +104,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(prescriptions);
         }
 
+        [Authorize(Roles = "Doctor")]
         [HttpPut("{id}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

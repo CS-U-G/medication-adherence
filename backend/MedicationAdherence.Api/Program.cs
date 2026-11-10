@@ -1,4 +1,5 @@
-﻿using MedicationAdherence.BLL.DependencyInjection;
+﻿using MedicationAdherence.Api.Middleware;
+using MedicationAdherence.BLL.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -11,6 +12,10 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerWithJwt();
+
 string connString = builder.Configuration
     .GetConnectionString("MedicationAdherenceDB")
     ?? throw new InvalidOperationException(
@@ -18,9 +23,6 @@ string connString = builder.Configuration
     );
 
 builder.Services.AddDependencyInjections(connString);
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 const string frontendCorsPolicy = "MedMinderFrontend";
 
@@ -34,14 +36,13 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(allowedOrigins)
               .WithMethods("GET", "POST", "PUT")
-              .WithHeaders("Content-Type");
+              .WithHeaders("Content-Type", "Authorization");
     });
 });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment() ||
-    builder.Configuration.GetValue<bool>("EnableSwagger"))
+if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("EnableSwagger"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -54,6 +55,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 app.UseCors(frontendCorsPolicy);
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

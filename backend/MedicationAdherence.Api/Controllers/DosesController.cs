@@ -1,11 +1,13 @@
 ﻿using MedicationAdherence.Api.Validators;
 using MedicationAdherence.BLL.DTOs;
 using MedicationAdherence.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicationAdherence.Api.Controllers
 {
+    [Authorize]
     [Route("api/Doses")]
     [ApiController]
     public class DosesController : ControllerBase
@@ -17,6 +19,7 @@ namespace MedicationAdherence.Api.Controllers
             _doseService = doseService;
         }
 
+        [Authorize(Roles = "Patient")]
         [HttpPost("configure-schedule")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,6 +39,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(new { message = "The reminder times have been saved, and the dosing schedule has been successfully generated." });
         }
 
+        [Authorize(Roles = "Doctor,Patient")]
         [HttpGet("patient/{patientId}/daily")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -52,6 +56,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(doses);
         }
 
+        [Authorize(Roles = "Patient")]
         [HttpPut("{doseLogId}/take")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,6 +78,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(new { message = "The dose has been successfully recorded." });
         }
 
+        [Authorize(Roles = "Patient")]
         [HttpPut("{doseLogId}/skip")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -93,6 +99,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(new { message = "The overdose was recorded along with the cause." });
         }
 
+        [Authorize(Roles = "Doctor,Patient")]
         [HttpGet("patient/{patientId}/report")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

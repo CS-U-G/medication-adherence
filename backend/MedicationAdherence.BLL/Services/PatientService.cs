@@ -1,4 +1,5 @@
 ﻿using MedicationAdherence.BLL.DTOs;
+using MedicationAdherence.BLL.Helpers;
 using MedicationAdherence.BLL.Interfaces;
 using MedicationAdherence.DAL.Interfaces;
 using MedicationAdherence.DAL.Models;
@@ -13,10 +14,12 @@ namespace MedicationAdherence.BLL.Services
     public class PatientService : IPatientService
     {
         private readonly IPatientRepository _patientRepository;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-        public PatientService(IPatientRepository patientRepository)
+        public PatientService(IPatientRepository patientRepository, IJwtTokenGenerator jwtTokenGenerator)
         {
             _patientRepository = patientRepository;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         private async Task<string> GenerateUniqueAccessCodeAsync()
@@ -84,7 +87,11 @@ namespace MedicationAdherence.BLL.Services
                 return null;
             }
 
-            return MapToPatientDetailsDto(patient);
+            var patientDto = MapToPatientDetailsDto(patient);
+
+            patientDto.Token = _jwtTokenGenerator.GenerateToken(patient.PatientId, patient.Person.FullName, "Patient");
+
+            return patientDto;
         }
 
         public async Task<PatientDetailsDto?> GetPatientByIdAsync(int patientId)
