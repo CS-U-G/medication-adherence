@@ -1,6 +1,13 @@
 <a class="text-link management-back" routerLink="/admin/doctors"><mm-icon name="arrow-left" /> Doctor accounts</a>
 
-@if (account(); as doctor) {
+@if (loading()) {
+  <section class="card empty-state" role="status"><p>Loading doctor account…</p></section>
+} @else if (loadError()) {
+  <section class="card empty-state">
+    <p role="alert">{{ loadError() }}</p>
+    <button class="btn btn-secondary" type="button" (click)="loadAccount()">Try again</button>
+  </section>
+} @else if (account(); as doctor) {
   <header class="page-heading">
     <div>
       <span class="eyebrow">Doctor account</span>
@@ -14,7 +21,12 @@
 
   <div class="management-detail-grid">
     <section class="card card-pad" aria-labelledby="profile-title">
-      <header class="panel-heading"><div><h2 id="profile-title">Profile information</h2><p>Contact and professional details for this doctor.</p></div></header>
+      <header class="panel-heading">
+        <div><h2 id="profile-title">Profile information</h2><p>Contact and professional details for this doctor.</p></div>
+        @if (editable()) {
+          <button class="btn btn-secondary" type="button" (click)="openEditor()"><mm-icon name="edit" /> Edit profile</button>
+        }
+      </header>
       <dl class="management-details">
         <div><dt>Full name</dt><dd>{{ doctor.name }}</dd></div>
         <div><dt>Work email</dt><dd>{{ doctor.email }}</dd></div>
@@ -37,16 +49,50 @@
     </section>
   </div>
 
-  <dialog #confirmation aria-labelledby="confirm-doctor-title" aria-describedby="confirm-doctor-description">
+  <dialog #confirmation aria-labelledby="confirm-doctor-title" aria-describedby="confirm-doctor-description" (cancel)="saving() && $event.preventDefault()">
     <span class="management-mark" [class.caution]="doctor.active" aria-hidden="true"><mm-icon [name]="doctor.active ? 'lock' : 'check'" /></span>
     <h2 id="confirm-doctor-title">{{ doctor.active ? 'Deactivate account?' : 'Activate account?' }}</h2>
     <p id="confirm-doctor-description">{{ doctor.active ? doctor.name + ' will no longer be able to sign in. Their records will stay in MedMinder.' : doctor.name + ' will be able to sign in again.' }}</p>
     @if (error()) { <p class="notice error management-dialog-error" role="alert">{{ error() }}</p> }
     <div class="actions">
-      <button class="btn btn-secondary" type="button" autofocus (click)="confirmation.close()">Cancel</button>
-      <button class="btn" [class.btn-danger]="doctor.active" type="button" (click)="changeAccess()">{{ doctor.active ? 'Deactivate account' : 'Activate account' }}</button>
+      <button class="btn btn-secondary" type="button" autofocus [disabled]="saving()" (click)="confirmation.close()">Cancel</button>
+      <button class="btn" [class.btn-danger]="doctor.active" type="button" [disabled]="saving()" (click)="changeAccess()">{{ saving() ? 'Updating access…' : doctor.active ? 'Deactivate account' : 'Activate account' }}</button>
     </div>
   </dialog>
+  @if (editable()) {
+    <dialog #editor aria-labelledby="edit-doctor-title" (cancel)="saving() && $event.preventDefault()">
+      <h2 id="edit-doctor-title">Edit doctor profile</h2>
+      <form class="editor-form" [formGroup]="form" (ngSubmit)="saveProfile()" novalidate>
+        <div class="field">
+          <label for="edit-name">Full name</label>
+          <input id="edit-name" formControlName="name" maxlength="100" required autofocus [readonly]="saving()" />
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <small class="field-error">Enter the doctor's full name.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="edit-specialty">Specialty</label>
+          <input id="edit-specialty" formControlName="specialty" maxlength="100" required [readonly]="saving()" />
+          @if (form.controls.specialty.touched && form.controls.specialty.invalid) {
+            <small class="field-error">Enter the doctor's specialty.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="edit-phone">Phone number <span class="optional">Optional</span></label>
+          <input id="edit-phone" type="tel" formControlName="phone" maxlength="20" [readonly]="saving()" />
+        </div>
+        <div class="field">
+          <label for="edit-license">License number <span class="optional">Optional</span></label>
+          <input id="edit-license" formControlName="license" maxlength="50" [readonly]="saving()" />
+        </div>
+        @if (error()) { <p class="notice error" role="alert">{{ error() }}</p> }
+        <div class="form-actions">
+          <button class="btn btn-secondary" type="button" [disabled]="saving()" (click)="editor.close()">Cancel</button>
+          <button class="btn" type="submit" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Save changes' }}</button>
+        </div>
+      </form>
+    </dialog>
+  }
 } @else {
   <section class="card empty-state">
     <span class="management-mark" aria-hidden="true"><mm-icon name="users" /></span>

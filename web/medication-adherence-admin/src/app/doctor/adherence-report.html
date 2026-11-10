@@ -3,7 +3,13 @@
   @if (patient(); as selected) { <a class="btn btn-secondary" [routerLink]="['/doctor/patients', selected.id]">View patient record <mm-icon name="arrow" /></a> }
 </header>
 
-@if (patient(); as selected) {
+@if (live) {
+  <section class="card empty-state">
+    <h2>Live adherence reports are unavailable</h2>
+    <p>Dose outcomes are not available from the API yet.</p>
+    <a class="btn" routerLink="/doctor/patients">Open patient directory</a>
+  </section>
+} @else if (patient(); as selected) {
   <section class="card card-pad report-filters" aria-label="Report filters">
     <div class="list-filters">
       <label class="field">Patient

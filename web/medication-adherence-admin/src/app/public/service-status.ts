@@ -33,8 +33,8 @@ import { Icon } from '../shared/icon';
           }
         </div></article>
         <article><span class="step-no">01</span><div><h3>Staff sign in</h3><p>Workspace access needs a secure session from the server. That support is currently unavailable.</p></div><span class="badge badge-amber">Pending authorization</span></article>
-        <article><span class="step-no">02</span><div><h3>Patient records, doctor accounts and medications</h3><p>Live access is unavailable until the server can verify staff roles and restrict patient records to the right doctors.</p></div><span class="badge badge-amber">Pending authorization</span></article>
-        <article><span class="step-no">03</span><div><h3>Prescriptions and adherence</h3><p>Live prescription and dose reporting services are not available in this release.</p></div><span class="badge">Not available</span></article>
+        <article><span class="step-no">02</span><div><h3>Patients, doctor accounts, medications and prescriptions</h3><p>Live workspace access requires a secure session and staff permissions.</p></div><span class="badge badge-amber">Pending authorization</span></article>
+        <article><span class="step-no">03</span><div><h3>Adherence reports</h3><p>The API does not provide live dose outcomes yet.</p></div><span class="badge">Not available</span></article>
       </section>
       <div class="status-footer"><p>Your administrator can help with access and service availability.</p><a class="btn btn-outline" routerLink="/login">Staff sign in</a></div>
     </main>`,

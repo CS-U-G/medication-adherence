@@ -5,27 +5,44 @@
 
 <section class="card" aria-labelledby="prescription-list">
   <div class="list-head">
-    <div class="panel-heading"><div><h2 id="prescription-list">Issued prescriptions</h2><p>{{ results().length }} {{ results().length === 1 ? 'record' : 'records' }}</p></div></div>
+    <div class="panel-heading"><div><h2 id="prescription-list">Issued prescriptions</h2>
+      @if (!loading() && !loadError()) { <p>{{ results().length }} {{ results().length === 1 ? 'record' : 'records' }}</p> }
+    </div></div>
     <label class="field search-single">Search prescriptions
-      <input #search type="search" placeholder="Patient, medication, or ID" [value]="query()" (input)="query.set(search.value)" />
+      <input #search type="search" placeholder="Patient, medication, or ID" [value]="query()" (input)="query.set(search.value)" [disabled]="loading() || !!loadError()" />
     </label>
   </div>
-  @if (results().length) {
+  @if (loading()) {
+    <div class="empty-state" role="status"><p>Loading prescriptions…</p></div>
+  } @else if (loadError()) {
+    <div class="empty-state">
+      <h3>Prescriptions unavailable</h3><p role="alert">{{ loadError() }}</p>
+      <button class="btn btn-secondary" type="button" (click)="load()">Try again</button>
+    </div>
+  } @else if (results().length) {
     <table class="responsive-table">
-      <thead><tr><th scope="col">Patient</th><th scope="col">Medication</th><th scope="col">Issued</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Open patient record</span></th></tr></thead>
+      <thead><tr><th scope="col">Patient</th><th scope="col">Medication</th><th scope="col">Issued</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Record actions</span></th></tr></thead>
       <tbody>
-        @for (row of results(); track row.prescription.id; let index = $index) {
+        @for (row of results(); track row.id; let index = $index) {
           <tr>
-            <td><a class="patient-identity" [routerLink]="['/doctor/patients', row.prescription.patientId]">
+            <td><a class="patient-identity" [routerLink]="['/doctor/patients', row.patientId]">
               <span class="avatar" [class.alt]="index % 3 === 1" [class.violet]="index % 3 === 2" aria-hidden="true">{{ initials(row.name) }}</span>
-              <span><strong>{{ row.name }}</strong><small>{{ row.prescription.id }}</small></span>
+              <span><strong>{{ row.name }}</strong><small>{{ row.id }}</small></span>
             </a></td>
             <td data-label="Medication">
-              {{ row.prescription.items[0].medicationName }}@if (row.prescription.items.length > 1) { <small class="inline-extra">+{{ row.prescription.items.length - 1 }} more</small> }
+              {{ row.medicationNames[0] ?? '—' }}@if (row.medicationNames.length > 1) { <small class="inline-extra">+{{ row.medicationNames.length - 1 }} more</small> }
             </td>
-            <td data-label="Issued">{{ row.prescription.issuedAt | date:'mediumDate' }}</td>
-            <td data-label="Status"><span class="badge" [class.badge-green]="row.prescription.status === 'Active'">{{ row.prescription.status }}</span></td>
-            <td class="row-action"><a class="text-link" [routerLink]="['/doctor/patients', row.prescription.patientId]">Patient record <mm-icon name="chevron" /></a></td>
+            <td data-label="Issued">{{ row.issuedAt | date:'mediumDate' }}</td>
+            <td data-label="Status"><span class="badge" [class.badge-green]="row.status === 'Active'">{{ row.status }}</span></td>
+            <td class="row-action">
+              @if (typeof row.id === 'number') {
+                <button class="btn btn-ghost" type="button" (click)="openDetail(detailDialog, row.id)" [attr.aria-label]="'View prescription ' + row.id">
+                  View prescription <mm-icon name="chevron" />
+                </button>
+              } @else {
+                <a class="text-link" [routerLink]="['/doctor/patients', row.patientId]">Patient record <mm-icon name="chevron" /></a>
+              }
+            </td>
           </tr>
         }
       </tbody>
@@ -42,3 +59,54 @@
     </div>
   }
 </section>
+
+<dialog #detailDialog aria-labelledby="prescription-detail-title" (cancel)="saving() && $event.preventDefault()">
+  <span class="metric-icon dialog-icon"><mm-icon name="file" /></span>
+  <h2 id="prescription-detail-title">Prescription {{ detailId() }}</h2>
+  @if (detailLoading()) {
+    <p role="status">Loading prescription…</p>
+  } @else if (detail(); as prescription) {
+    <p><strong>{{ prescription.patientName ?? 'Patient ' + prescription.patientId }}</strong> · Issued {{ prescription.issuedDate | date:'mediumDate' }}</p>
+    @if (prescription.diagnosisNotes; as notes) { <p class="multiline"><strong>Notes</strong> {{ notes }}</p> }
+    <ul class="review-medications">
+      @for (item of prescription.items; track item.prescriptionItemId) {
+        <li>
+          <strong>{{ item.prescribedMedName }}</strong>
+          <small>{{ item.dosage }} · {{ frequencyLabel(item.frequencyPerDay) }} · {{ item.durationDays }} {{ item.durationDays === 1 ? 'day' : 'days' }}</small>
+          <small>{{ sourceLabel(item.medicationSource) }} · {{ item.scheduleStatus === 'PendingSchedule' ? 'Pending schedule' : item.scheduleStatus }}</small>
+          @if (item.startDate || item.endDate) {
+            <small>
+              @if (item.startDate) { Starts {{ item.startDate | date:'mediumDate' }} }
+              @if (item.startDate && item.endDate) { · }
+              @if (item.endDate) { Ends {{ item.endDate | date:'mediumDate' }} }
+            </small>
+          }
+          @if (item.instructions) { <small class="multiline">{{ item.instructions }}</small> }
+        </li>
+      }
+    </ul>
+    <label class="field">Prescription status
+      <select #statusSelect [disabled]="saving()" (change)="selectStatus(statusSelect.value)">
+        @for (status of statuses; track status) { <option [value]="status" [selected]="selectedStatus() === status">{{ status }}</option> }
+      </select>
+    </label>
+    @if (statusSaved()) { <p role="status" class="notice">Prescription status updated.</p> }
+    @if (detailError()) { <p role="alert" class="notice error">{{ detailError() }}</p> }
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" [disabled]="saving()" (click)="detailDialog.close()">Close</button>
+      <button class="btn" type="button" [disabled]="saving() || selectedStatus() === prescription.status" (click)="saveStatus()">
+        {{ saving() ? 'Saving…' : 'Save status' }}
+      </button>
+    </div>
+  } @else {
+    @if (detailError()) { <p role="alert" class="notice error">{{ detailError() }}</p> }
+  }
+  @if (!detail()) {
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" (click)="detailDialog.close()">Close</button>
+      @if (!detailLoading() && detailId(); as id) {
+        <button class="btn" type="button" (click)="loadDetail(id)">Try again</button>
+      }
+    </div>
+  }
+</dialog>

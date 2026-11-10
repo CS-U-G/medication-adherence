@@ -13,31 +13,36 @@
 <div class="detail-layout">
   <form class="card card-pad form-section" [formGroup]="form" (ngSubmit)="save(codeDialog)" novalidate>
     <div class="panel-heading"><div><h2>Patient information</h2><p>Enter the details used to identify and contact this patient.</p></div></div>
-    <div class="form-grid">
+    <div class="form-grid" [attr.inert]="saving() ? '' : null">
       <label class="field">Full name
         <input formControlName="name" autocomplete="off" placeholder="e.g. Jordan Lee" required
           [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid || null" />
         @if (form.controls.name.touched && form.controls.name.invalid) { <small class="field-error">Enter a full name (up to 100 characters).</small> }
       </label>
-      <label class="field">Email address
-        <input type="email" formControlName="email" autocomplete="off" placeholder="patient@example.com" required
-          [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid || null" />
-        @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Enter a valid email address.</small> }
-      </label>
+      @if (!live) {
+        <label class="field">Email address
+          <input type="email" formControlName="email" autocomplete="off" placeholder="patient@example.com" required
+            [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid || null" />
+          @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Enter a valid email address.</small> }
+        </label>
+      }
       <label class="field">Date of birth
         <input type="date" formControlName="dob" [max]="today" required
           [attr.aria-invalid]="form.controls.dob.touched && form.controls.dob.invalid || null" />
         @if (form.controls.dob.touched && form.controls.dob.invalid) { <small class="field-error">Enter a valid birth date that is today or earlier.</small> }
       </label>
       <label class="field">Phone number <span class="sr-only">(optional)</span>
-        <input type="tel" formControlName="phone" autocomplete="off" placeholder="Optional"
+        <input type="tel" formControlName="phone" autocomplete="off" placeholder="Optional" [attr.maxlength]="live ? 20 : 25"
           [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid || null" />
         @if (form.controls.phone.touched && form.controls.phone.invalid) { <small class="field-error">Enter a valid phone number.</small> }
       </label>
       <label class="field">Gender
-        <select formControlName="gender">
-          <option value="">Select if known</option><option>Female</option><option>Male</option>
+        <select formControlName="gender" [attr.required]="live ? '' : null"
+          [attr.aria-invalid]="form.controls.gender.touched && form.controls.gender.invalid || null">
+          <option value="">{{ live ? 'Select gender' : 'Select if known' }}</option>
+          <option [value]="live ? 'F' : 'Female'">Female</option><option [value]="live ? 'M' : 'Male'">Male</option>
         </select>
+        @if (form.controls.gender.touched && form.controls.gender.invalid) { <small class="field-error">Select the patient’s gender.</small> }
       </label>
       <label class="field wide">Notes <span class="sr-only">(optional)</span>
         <textarea formControlName="notes" maxlength="500" placeholder="Anything the care team should know? (Optional)"></textarea>
@@ -46,7 +51,7 @@
     @if (feedback()) { <p role="alert" class="notice error">{{ feedback() }}</p> }
     <div class="form-actions end-actions">
       <a class="btn btn-secondary" routerLink="/doctor/patients">Cancel</a>
-      <button class="btn" type="submit"><mm-icon name="plus" /> Register patient</button>
+      <button class="btn" type="submit" [disabled]="saving()"><mm-icon name="plus" /> {{ saving() ? 'Registering…' : 'Register patient' }}</button>
     </div>
   </form>
 

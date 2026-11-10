@@ -4,10 +4,10 @@ Angular 22 standalone frontend for the patient-mobile / staff-web ecosystem.
 All changes and deployment files belong in this directory. Backend source is read-only.
 
 **Release status:** the public health check, staff credential form and doctor
-self-registration use the Render API. See [the endpoint inventory](docs/api-contracts.md)
-for live verification and blockers. Protected clinical and administration workflows
-require a backend session and server authorization. An identity response alone does
-not establish a protected session.
+self-registration use the Render API. The live staff screens are wired for patient
+management, doctor accounts, medication catalogue and prescriptions. Staff access
+still depends on the backend issuing a session and enforcing staff permissions.
+The [endpoint inventory](docs/api-contracts.md) lists the supported operations.
 
 ## Run and verify
 
@@ -60,7 +60,10 @@ No URL parameter or one-click role selector can enable it in production.
   is submitted. Name/email/specialization/phone/license limits match database mappings.
   Optional phone and license are submitted as null when blank. Account creation
   does not establish a protected session. Admin accounts are created in the database.
-- `src/app/doctor`, `admin`: preserved lazy-loaded development preview features.
+- `src/app/core/staff-http.ts` and the patient, user, medication and prescription API
+  clients: typed staff requests that require a live session.
+- `src/app/doctor`, `admin`: staff screens use the API in live mode and use local
+  records only in the explicitly selected development preview.
 - `src/app/shared`: existing brand, icons, shell, chart, and shared presentation.
 - `src/app/core/demo-*`, `medminder-data.service.ts`: development-only local preview behavior; these are not API DTOs or live data access.
 
@@ -81,10 +84,10 @@ GET `/health` is connected to the public availability page. Its response must
 contain `status: healthy`; an SPA HTML fallback is not interpreted as success.
 Health means reachability, not authentication or release readiness.
 
-See [the endpoint inventory](docs/api-contracts.md) for every actual controller
-route, DTO field, missing feature and exact backend prerequisite. Patient and user
-endpoints are documented but intentionally not called without server authorization.
-See the inventory for which clinical endpoints the deployed API exposes.
+Once the backend publishes its session contract, connect it to the sign-in adapter
+and attach the required credential at the staff HTTP boundary. The clinical data
+clients can then run from the guarded routes. Live adherence reports still require
+a dose outcome endpoint. See [the endpoint inventory](docs/api-contracts.md).
 
 ## Styles and assets
 
@@ -126,14 +129,12 @@ After deploying, refresh `/login` and `/register` directly; both should serve th
 Angular app. Use the public health check and confirm in the browser network panel
 that the request goes to `https://medication-adherence.onrender.com/health`.
 
-The deployed API currently returns `405` to the JSON login preflight and omits
-`Access-Control-Allow-Origin` from the health response. The API operator must
-allow the exact HTTPS frontend origin from the Render dashboard (for example,
-`https://medminder-web.onrender.com` if assigned), plus any custom domains in use.
-Allow `http://127.0.0.1:4200` or `http://localhost:4200` as needed for local work.
-The CORS policy must allow `GET` and `POST`, and `Content-Type` for JSON POSTs.
-See the [API inventory](docs/api-contracts.md) for server requirements and how to
-recheck the policy.
+The API's CORS policy allows the deployed frontend origin
+`https://medication-adherence-web.onrender.com`. Add any new frontend or custom
+domain to the backend's allowed origins. For local testing, allow the origin
+used in the browser. The staff requests use `GET`, `POST`, `PUT` and
+`Content-Type` for JSON. See the [API inventory](docs/api-contracts.md) for
+server requirements and verification commands.
 
 [Render SPA rewrites](https://render.com/docs/redirects-rewrites) ·
 [Render static hosting](https://render.com/docs/your-first-deploy) ·

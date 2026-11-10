@@ -5,10 +5,10 @@
 
 On 10 November 2026, the deployed OpenAPI document returned HTTP 200. It
 confirms the paths, methods, request keys and query parameters below, including
-the medication catalogue. Swagger does not describe the successful response
-schemas or an authentication scheme. Response shapes below come from the
-controllers and service DTOs in the read-only checkout; successful login,
-record reads and writes were not verified live.
+the medication catalogue and prescription routes. The controllers and service
+DTOs define the response shapes. Angular's live staff screens are wired to the
+patient, user, medication and prescription operations below. The existing staff
+session gate still prevents access against the current backend.
 
 | Method and path | Contract | Web workflow |
 | --- | --- | --- |
@@ -16,7 +16,7 @@ record reads and writes were not verified live.
 | GET `/health` | `{status: "healthy"}` | Public service check; process liveness only |
 | POST `/api/auth/web-login` | `{email, password}` → AuthResponse | Staff credential check; identity alone cannot open a protected session |
 | POST `/api/auth/SignIn` | SignInDoctor → AuthResponse | Public doctor self-registration; no protected session |
-| POST `/api/patients/code-login` | `{accessCode}` → PatientDetails | Existing patient access-code contract; no staff or protected patient session |
+| POST `/api/patients/code-login` | `{accessCode}` → PatientDetails | Mobile patient sign-in |
 | GET `/api/patients/doctor/{doctorId}` | PatientDetails[] | Doctor's patient list; requires ownership enforcement |
 | GET `/api/patients/{patientId}` | PatientDetails | Patient record; requires ownership enforcement |
 | POST `/api/patients/register-by-doctor` | CreatePatient → PatientDetails | Register patient; requires authenticated doctor |
@@ -27,11 +27,16 @@ record reads and writes were not verified live.
 | GET `/api/users/user/{id}` | UserProfile; `id` is a **user ID** | Staff profile; requires self or admin authorization |
 | PUT `/api/users/doctors/{doctorId}` | UpdateDoctor → `{message}` | Edit doctor; requires admin or verified ownership as appropriate |
 | POST `/api/users/freeze/{id}`, `/api/users/unfreeze/{id}` | `id` is a **user ID** → boolean; `false` is not success | Freeze/unfreeze accounts; requires admin authorization |
-| GET `/api/Medications/All`, `/api/Medications/active` | Medication[] | Full/active medication catalogue; both currently return HTTP 500 |
+| GET `/api/Medications/All`, `/api/Medications/active` | Medication[] | Admin catalogue and doctor prescription picker |
 | GET `/api/Medications/Medication/{id}` | Medication | Catalogue detail |
 | POST `/api/Medications/AddNew` | CreateMedication → Medication | Create catalogue entry; requires admin authorization |
 | PUT `/api/Medications/Medication/{id}` | CreateMedication → `{message}` | Edit catalogue entry; requires admin authorization |
 | PUT `/api/Medications/{id}/status?isActive=true` | `{message}` | Activate/deactivate catalogue entry; requires admin authorization |
+| POST `/api/Prescriptions/AddNew` | CreatePrescription → Prescription | Issue a prescription for an assigned patient |
+| GET `/api/Prescriptions/Prescription/{id}` | Prescription | Prescription details |
+| GET `/api/Prescriptions/patient/{id}` | Prescription[] | Patient prescription history |
+| GET `/api/Prescriptions/doctor/{id}` | Prescription[] | Doctor's prescription list and active count |
+| PUT `/api/Prescriptions/{id}/status?status=Completed` | `{message}` | Change prescription status to Active, Completed or Cancelled |
 
 ## DTO fields
 
@@ -59,14 +64,23 @@ single character, and ID parameters are integers.
 - Medication: `medicationId`, `tradeName`, `scientificName`, `dosageForm`,
   `strength`, `isActive`, `createdAt` (date and time). Scientific name,
   dosage form and strength can be null.
+- CreatePrescription: numeric `patientId` and `doctorId`, optional
+  `diagnosisNotes`, and `items`. Each item has `medicationId` (nullable),
+  `prescribedMedName`, `dosage`, integer `frequencyPerDay` (1–12),
+  `durationDays`, optional `startDate` and `instructions`.
+- Prescription: `prescriptionId`, `patientId`, `patientName`, `doctorId`,
+  `doctorName`, `diagnosisNotes`, `issuedDate`, `status`, `items`. Items
+  also include the assigned item ID, end date, medication source and schedule status.
 
-Swagger exposes no prescription, schedule, dose, adherence summary, dashboard
+Swagger exposes no schedule, dose, adherence summary, platform-wide dashboard
 metrics, search, pagination, session refresh or logout API.
 
-## Live HTTP evidence
+## Initial deployment diagnostics
 
-These checks used curl over HTTPS at about 11:46–11:54 Riyadh time. No account
-credentials, patient records or production writes were used.
+These checks used curl over HTTPS at about 11:46–11:54 Riyadh time, before the
+CORS and connection string changes. Later checks confirmed the deployed
+frontend origin and successful medication reads. The table records the
+original failure evidence. It contains no patient records or production writes.
 
 | Request | HTTP result | Meaning |
 | --- | --- | --- |
@@ -129,25 +143,7 @@ foreach ($path in @('/api/users/user/0', '/api/patients/0', '/api/patients/docto
 
 ## Changes needed on the backend
 
-1. Configure [ASP.NET Core CORS](https://learn.microsoft.com/en-us/aspnet/core/security/cors)
-   for the exact frontend origin Render assigns (expected
-   `https://medminder-web.onrender.com`), any approved custom frontend domain,
-   and `http://localhost:4200` / `http://127.0.0.1:4200` if local browser
-   development is allowed. Configure a named `AddCors` policy and call
-   `UseCors` after routing and before authentication/authorization. Allow
-   `GET`, `POST`, `PUT` and the `Content-Type` header; include
-   `Authorization` only when the backend actually supports a bearer token.
-   Preflight needs a successful OPTIONS response with the matching
-   `Access-Control-Allow-Origin`, allowed method and headers. Actual responses
-   (including errors) also need the matching allow-origin header. CORS does not
-   protect these endpoints from direct HTTP callers.
-2. Correlate the empty HTTP 500s with the Render service logs. At 08:49 UTC the
-   `rndr-id` values were `4b320f91-faa5-4027` (all medications),
-   `b0b5afe6-5b64-4b00` (active medications), and `cf5a2f78-7ecc-484a`
-   (web login). These handlers use database repositories in the checkout.
-   Verify the deployed database connection, permissions and schema against the
-   logged exception. The public response does not identify which failed.
-3. Register an authentication scheme and issue a server-verifiable session.
+1. Register an authentication scheme and issue a server-verifiable session.
    Publish the token or cookie contract, expiry, identity validation, renewal
    and logout/revocation behavior. If using cookies, define HTTPS, SameSite,
    credentialed CORS and CSRF protection. Apply role and ownership policies:
@@ -157,10 +153,15 @@ foreach ($path in @('/api/users/user/0', '/api/patients/0', '/api/patients/docto
    patient ID. Keep public health and the intended registration/login routes
    separate from protected actions. Do not expose patient access codes or
    health details to unauthorized callers.
-4. Publish authenticated prescription, schedule, dose and adherence contracts
-   before connecting those screens. Define which roles can read or write each
-   resource and enforce patient ownership on the server. Add database readiness
-   monitoring separately from the existing process liveness check.
+2. Publish authenticated schedule, dose and adherence contracts. Apply server
+   authorization to the existing prescription routes and enforce patient ownership
+   on the server.
+
+The deployed [CORS policy](https://learn.microsoft.com/en-us/aspnet/core/security/cors)
+allows the Angular site at `https://medication-adherence-web.onrender.com` and
+configured local origins. If the session uses a bearer token, allow the
+`Authorization` request header. Error responses should carry the same allowed
+origin as successful responses so Angular can report the API failure.
 
 The checkout compares the submitted email directly with the stored value.
 The frontend preserves the supplied case. For consistent case-insensitive

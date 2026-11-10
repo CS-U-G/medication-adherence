@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from '../core/auth.service';
 import { MedMinderData } from '../core/medminder-data.service';
 import { ReportPeriod } from '../core/models';
 import { Chart } from '../shared/chart';
@@ -12,6 +13,7 @@ import { Icon } from '../shared/icon';
   templateUrl: './adherence-report.html',
 })
 export class AdherenceReportPage {
+  protected readonly live = inject(AuthService).mode() === 'live';
   protected readonly data = inject(MedMinderData);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

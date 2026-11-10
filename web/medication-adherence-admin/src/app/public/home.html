@@ -44,7 +44,7 @@
         @if(demoError()){<p class="notice error role-error" role="alert">{{demoError()}}</p>}
         <div class="roles">
           <article class="role-card">
-            <span class="step-icon"><mm-icon name="stethoscope"/></span><h3>Doctor workspace</h3><p>Designed around patient registration, patient records, and follow-up. Live access requires server authorization; prescriptions and adherence reporting are not yet available.</p>
+            <span class="step-icon"><mm-icon name="stethoscope"/></span><h3>Doctor workspace</h3><p>Designed around patient records, prescriptions, and follow-up. Live access requires a secure staff session.</p>
             @if (auth.mode() === 'demo') {<button type="button" class="btn" (click)="demo('doctor')">Enter Doctor Demo <mm-icon name="arrow"/></button>}
             @else {<a routerLink="/register" class="btn">Create doctor account <mm-icon name="arrow"/></a>}
           </article>

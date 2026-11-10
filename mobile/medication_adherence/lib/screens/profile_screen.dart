@@ -261,14 +261,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             value: 'Male',
                             child: Text('Male'),
                           ),
-                          DropdownMenuItem(
-                            value: 'Other',
-                            child: Text('Other'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Prefer not to say',
-                            child: Text('Prefer not to say'),
-                          ),
                         ],
                         onChanged: (value) =>
                             setState(() => _gender = value),

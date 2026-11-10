@@ -1,10 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../core/auth.service';
 import { MedMinderData } from '../core/medminder-data.service';
-import { Patient } from '../core/models';
+import { PatientApi } from '../core/patient-api';
 import { localDateKey } from '../core/report';
+import { staffId } from '../core/staff-http';
 import { Icon } from '../shared/icon';
+import { patientFields, patientInputDto } from './patient-form';
 
 @Component({
   selector: 'mm-patient-registration',
@@ -12,42 +15,51 @@ import { Icon } from '../shared/icon';
   templateUrl: './patient-registration.html',
 })
 export class PatientRegistrationPage {
-  private readonly data = inject(MedMinderData);
+  private readonly auth = inject(AuthService);
+  protected readonly live = this.auth.mode() === 'live';
+  private readonly data = this.live ? null : inject(MedMinderData);
+  private readonly api = inject(PatientApi);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(NonNullableFormBuilder);
   protected readonly today = localDateKey(new Date());
-  protected readonly patient = signal<Patient | null>(null);
+  protected readonly patient = signal<{ id: string; name: string; accessCode: string } | null>(null);
   protected readonly feedback = signal('');
   protected readonly copyStatus = signal('');
+  protected readonly saving = signal(false);
   protected readonly form = this.fb.group({
-    name: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
-    email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
-    phone: ['', [Validators.maxLength(25), Validators.pattern(/^\+?(?:[(). -]*\d){7,15}[(). -]*$/)]],
-    dob: ['', [Validators.required, this.checkBirthDate.bind(this)]],
-    gender: [''],
-    notes: ['', [Validators.maxLength(500)]],
+    ...patientFields(this.fb, this.today, this.live),
+    email: ['', this.live ? [] : [Validators.required, Validators.email, Validators.maxLength(254)]],
   });
 
-  private checkBirthDate(control: AbstractControl<string>) {
-    const date = control.value;
-    return date && (date > this.today || localDateKey(new Date(date + 'T12:00:00')) !== date)
-      ? { birthDate: true }
-      : null;
-  }
-
-  protected save(dialog: HTMLDialogElement): void {
+  protected async save(dialog: HTMLDialogElement): Promise<void> {
+    if (this.saving()) return;
     this.feedback.set('');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.feedback.set('Check the highlighted patient details.');
       return;
     }
+    this.saving.set(true);
     try {
-      this.patient.set(this.data.registerPatient(this.form.getRawValue()));
+      const input = this.form.getRawValue();
+      if (this.data) {
+        this.patient.set(this.data.registerPatient(input));
+      } else {
+        const session = this.auth.session();
+        if (session?.role !== 'doctor' || session.mode !== 'live') throw new Error('Sign in as a doctor to register a patient.');
+        const record = await this.api.register({ ...patientInputDto(input), primaryDoctorId: staffId(session.id) });
+        if (this.destroyRef.destroyed) return;
+        this.patient.set({ id: String(record.patientId), name: record.fullName, accessCode: record.patientAccessCode });
+      }
       this.copyStatus.set('');
       this.form.reset();
       dialog.showModal();
     } catch (error) {
-      this.feedback.set(error instanceof Error ? error.message : 'Patient registration could not be saved.');
+      this.feedback.set(this.live
+        ? 'Patient registration could not be confirmed. Check the directory before trying again.'
+        : error instanceof Error ? error.message : 'Patient registration could not be saved.');
+    } finally {
+      this.saving.set(false);
     }
   }
 
