@@ -3,10 +3,11 @@
 Angular 22 standalone frontend for the patient-mobile / staff-web ecosystem.
 All changes and deployment files belong in this directory. Backend source is read-only.
 
-**Release status:** the public homepage, credential verification and API health
-check and public doctor self-registration are implemented. Protected clinical and administration workflows are blocked
-by missing backend authentication and authorization. This is not a completed
-production clinical platform. No identity response is treated as a protected session.
+**Release status:** the public health check, staff credential form and doctor
+self-registration use the Render API. See [the endpoint inventory](docs/api-contracts.md)
+for live verification and blockers. Protected clinical and administration workflows
+require a backend session and server authorization. An identity response alone does
+not establish a protected session.
 
 ## Run and verify
 
@@ -14,11 +15,11 @@ Use Node 24.15+ in the 24.x line (or another version permitted by package.json).
 From `web/medication-adherence-admin`:
 
 ```powershell
-npm.cmd ci --cache .npm-cache
+npm.cmd ci --include=dev
 npm.cmd start -- --host 127.0.0.1 --port 4200
 npm.cmd run typecheck
 npm.cmd test
-npm.cmd run build
+npm.cmd run build -- --configuration production
 ```
 
 Open http://127.0.0.1:4200. Production output is
@@ -26,30 +27,16 @@ Open http://127.0.0.1:4200. Production output is
 jsdom and HttpTestingController; no live backend credentials are needed.
 There is no existing lint target. Do not describe typechecking as linting.
 
-## Configure the API
+## API configuration
 
-`public/app-config.json` is loaded before Angular starts. It defaults to:
+Local and deployed live mode both send API requests directly to
+`https://medication-adherence.onrender.com`. The origin is fixed in the Angular
+configuration and doesn't require a build-time environment variable, local proxy,
+or same-origin hosting. The backend must allow the exact browser origin through CORS.
 
-```json
-{"mode":"live","apiBaseUrl":""}
-```
-
-An empty base URL means same-origin API hosting. For a separate API use an HTTPS
-base URL, for example `https://your-api.onrender.com`, without `/api`, credentials,
-query parameters or fragment. The server must allow the exact frontend CORS origin.
-The file is public: never put credentials or private tokens in it.
-
-For builds and Render, generate the file from a public environment variable:
-
-```powershell
-$env:MEDMINDER_API_URL = 'https://your-api.onrender.com'
-npm.cmd run configure
-npm.cmd run build
-```
-
-The generator always writes live mode. Configuration errors produce a recoverable
-startup screen; they never enable a demo fallback. Nginx prevents caching this file.
-A static host can replace the published JSON without rebuilding JavaScript.
+`public/app-config.json` defaults to `{"mode":"live"}` and is loaded before
+Angular starts. The file is public; never put credentials or tokens in it. Invalid
+configuration produces a startup error with a retry option.
 
 ### Development preview
 
@@ -97,7 +84,7 @@ Health means reachability, not authentication or release readiness.
 See [the endpoint inventory](docs/api-contracts.md) for every actual controller
 route, DTO field, missing feature and exact backend prerequisite. Patient and user
 endpoints are documented but intentionally not called without server authorization.
-Medication, prescription and adherence controllers do not exist in this checkout.
+See the inventory for which clinical endpoints the deployed API exposes.
 
 ## Styles and assets
 
@@ -125,16 +112,28 @@ required. Create a Static Site with:
 | Setting | Value |
 | --- | --- |
 | Root directory | `web/medication-adherence-admin` |
-| Build command | `npm ci --cache .npm-cache && npm run configure && npm run build` |
+| Build command | `npm ci --include=dev && npm run build -- --configuration production` |
 | Publish directory | `dist/medication-adherence-admin/browser` |
-| Environment | `NODE_VERSION=24.15.0`, `MEDMINDER_API_URL=https://your-api-host` |
+| Environment | `NODE_VERSION=24.15.0`, `SKIP_INSTALL_DEPS=true` |
 | Rewrite | `/*` to `/index.html` (Rewrite, not Redirect) |
 
 Alternatively select `web/medication-adherence-admin/render.yaml` as the Blueprint
-path. The blueprint configures the SPA rewrite and configuration cache headers.
-Use the actual externally reachable HTTPS API URL. Browser requests cannot use
-Render private/internal hostnames. Do not add a proxy that bypasses authorization.
-The backend CORS/session changes in the inventory must be completed independently.
+path. The Blueprint configures these settings and the configuration cache headers.
+For an existing site, remove the previous `MEDMINDER_API_URL` and `npm run configure`
+settings when switching to this build command.
+
+After deploying, refresh `/login` and `/register` directly; both should serve the
+Angular app. Use the public health check and confirm in the browser network panel
+that the request goes to `https://medication-adherence.onrender.com/health`.
+
+The deployed API currently returns `405` to the JSON login preflight and omits
+`Access-Control-Allow-Origin` from the health response. The API operator must
+allow the exact HTTPS frontend origin from the Render dashboard (for example,
+`https://medminder-web.onrender.com` if assigned), plus any custom domains in use.
+Allow `http://127.0.0.1:4200` or `http://localhost:4200` as needed for local work.
+The CORS policy must allow `GET` and `POST`, and `Content-Type` for JSON POSTs.
+See the [API inventory](docs/api-contracts.md) for server requirements and how to
+recheck the policy.
 
 [Render SPA rewrites](https://render.com/docs/redirects-rewrites) ·
 [Render static hosting](https://render.com/docs/your-first-deploy) ·
@@ -145,7 +144,7 @@ The backend CORS/session changes in the inventory must be completed independentl
 From this directory:
 
 ```sh
-docker build --build-arg MEDMINDER_API_URL=https://your-api-host -t medminder-web .
+docker build -t medminder-web .
 docker run --rm -e PORT=10000 -p 127.0.0.1:10000:10000 medminder-web
 ```
 
@@ -153,13 +152,12 @@ For a Render Docker Web Service use this directory as Root Directory, Dockerfile
 `./Dockerfile`, context `.`, and health path `/healthz`. The multistage image serves
 only the production output with Nginx. SPA routes fall back to index.html; JS/CSS
 assets are cached with immutable headers; index/config are revalidated or uncached.
-`/api/*` and `/health` never return successful app-shell HTML. For same-origin API
-hosting, supply a real API gateway separately. `PORT` is the only Nginx substitution.
-The API URL is a public build argument, not a runtime container environment option.
+`/api/*` and `/health` never return successful app-shell HTML. `PORT` is the only
+Nginx substitution; Docker uses the same fixed HTTPS API origin as the static site.
 
 ## Verification and limitations
 
-See [verification notes](docs/verification.md) for this session's actual checks.
-Earlier images in `docs/screenshots` describe the prior demo and are not evidence
-for this release. No real backend end-to-end or clinical workflow verification is
-claimed. See [the implementation plan](docs/implementation-plan.md) for scope.
+See [the API inventory](docs/api-contracts.md) for current live endpoint checks and
+remaining blockers. The [earlier verification notes](docs/verification.md) and
+images in `docs/screenshots` describe prior local checks and the demo. They do
+not verify live sign-in, account creation, or protected clinical workflows.

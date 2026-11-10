@@ -3,6 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TimeoutError } from 'rxjs';
+import { MEDMINDER_CONFIG } from '../core/app-mode';
 import { MedMinderApi } from '../core/api.service';
 import { localDateKey } from '../core/report';
 import { Brand } from '../shared/brand';
@@ -29,6 +30,7 @@ function birthDate(control: AbstractControl): ValidationErrors | null {
 })
 export class RegisterDoctor {
   private readonly api = inject(MedMinderApi);
+  protected readonly live = inject(MEDMINDER_CONFIG).mode === 'live';
   protected readonly busy = signal(false);
   protected readonly success = signal(false);
   protected readonly error = signal('');
@@ -78,7 +80,7 @@ export class RegisterDoctor {
   }
 
   protected async submit(): Promise<void> {
-    if (this.busy() || this.success()) return;
+    if (!this.live || this.busy() || this.success()) return;
     this.error.set('');
     this.serverFields.set({});
     this.form.markAllAsTouched();
@@ -87,27 +89,29 @@ export class RegisterDoctor {
     const value = this.form.getRawValue();
     try {
       await this.api.registerDoctor({ fullName: value.fullName.trim(), phoneNumber: value.phoneNumber.trim() || null,
-        gender: value.gender, dateOfBirth: value.dateOfBirth, email: value.email.trim().toLowerCase(), password: value.password,
+        gender: value.gender, dateOfBirth: value.dateOfBirth, email: value.email.trim(), password: value.password,
         specialization: value.specialization.trim(), licenseNumber: value.licenseNumber.trim() || null });
       this.form.reset();
       this.success.set(true);
     } catch (failure: unknown) {
       if (failure instanceof HttpErrorResponse) {
-        if (failure.status === 0) this.error.set('The registration service could not be reached. Check your connection and try again.');
-        else if (failure.status === 401 || failure.status === 409) this.error.set('This email address could not be registered. It may already be in use. Try signing in or use another email address.');
+        if (failure.status === 0) this.error.set('The browser did not receive a response from the registration service. Account creation could not be confirmed. Check service availability or contact support before submitting again.');
+        else if ([502, 503, 504].includes(failure.status)) this.error.set(`The registration service is temporarily unavailable (HTTP ${failure.status}). Account creation could not be confirmed. Contact support before submitting again.`);
+        else if (failure.status === 401 || failure.status === 409) this.error.set('This email address could not be registered. If you already have a doctor account, you do not need to create another one.');
         else if (failure.status === 400) {
           const details: unknown = failure.error;
           const fields: Partial<Record<FieldKey, string>> = {};
           if (details && typeof details === 'object' && 'errors' in details && details.errors && typeof details.errors === 'object') {
             for (const [serverKey, messages] of Object.entries(details.errors)) {
-              const key = Object.keys(this.form.controls).find(name => name.toLowerCase() === serverKey.toLowerCase()) as FieldKey | undefined;
+              const normalizedKey = serverKey.replace(/^\$\./, '').toLowerCase();
+              const key = Object.keys(this.form.controls).find(name => name.toLowerCase() === normalizedKey) as FieldKey | undefined;
               if (key && Array.isArray(messages) && typeof messages[0] === 'string') fields[key] = messages[0];
             }
           }
           this.serverFields.set(fields);
           this.error.set('The server could not accept these details. Review the form and try again.');
-        } else this.error.set('Account creation could not be confirmed. Please try again later or contact support.');
-      } else if (failure instanceof TimeoutError) this.error.set('The request timed out. Account creation could not be confirmed. Try signing in before submitting again.');
+        } else this.error.set('Account creation could not be confirmed. Contact support before submitting again.');
+      } else if (failure instanceof TimeoutError) this.error.set('The request timed out. Account creation could not be confirmed. Contact support before submitting again.');
       else this.error.set(failure instanceof Error ? failure.message : 'Account creation could not be confirmed. Please try again later.');
     } finally { this.busy.set(false); }
   }

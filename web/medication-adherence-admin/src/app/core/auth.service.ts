@@ -16,7 +16,9 @@ export class AuthService {
   readonly mode = signal(this.config.mode).asReadonly();
 
   async signIn(email: string, password: string): Promise<Session> {
-    const identity = await this.adapter.signIn(email.trim().toLowerCase(), password);
+    const address = email.trim();
+    // The deployed account lookup compares addresses as stored.
+    const identity = await this.adapter.signIn(this.mode() === 'demo' ? address.toLowerCase() : address, password);
     return this.start(identity);
   }
 

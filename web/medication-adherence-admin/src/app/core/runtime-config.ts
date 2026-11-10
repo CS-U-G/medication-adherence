@@ -1,4 +1,4 @@
-import type { MedMinderConfig } from './app-mode';
+import { MEDMINDER_API_ORIGIN, type MedMinderConfig } from './app-mode';
 
 export function parseConfig(value: unknown, development = false): MedMinderConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid application configuration.');
@@ -6,18 +6,16 @@ export function parseConfig(value: unknown, development = false): MedMinderConfi
   const mode = input['mode'] ?? 'live';
   if (mode !== 'live' && mode !== 'demo') throw new Error('Invalid application mode.');
   if (mode === 'demo' && !development) throw new Error('Demo mode is available only in development.');
-  const rawUrl = input['apiBaseUrl'] ?? '';
-  if (typeof rawUrl !== 'string') throw new Error('Invalid API base URL.');
-  const apiBaseUrl = rawUrl.trim().replace(/\/+$/, '');
-  if (apiBaseUrl) {
-    const url = new URL(apiBaseUrl);
-    const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
-    if ((url.protocol !== 'https:' && !(development && loopback && url.protocol === 'http:')) ||
-        url.username || url.password || url.search || url.hash) {
-      throw new Error('The API requires an HTTPS base URL without credentials, query or fragment.');
+  // Old runtime assets can still load, but they cannot redirect live API traffic.
+  const legacyUrl = input['apiBaseUrl'];
+  if (legacyUrl !== undefined) {
+    if (typeof legacyUrl !== 'string') throw new Error('Invalid API base URL.');
+    const normalized = legacyUrl.trim().replace(/\/+$/, '');
+    if (legacyUrl.trim() && normalized !== MEDMINDER_API_ORIGIN) {
+      throw new Error('The API address must be the MedMinder Render HTTPS origin.');
     }
   }
-  return { mode, apiBaseUrl };
+  return { mode };
 }
 
 export async function loadConfig(development: boolean): Promise<MedMinderConfig> {

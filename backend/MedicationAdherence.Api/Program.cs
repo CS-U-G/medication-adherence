@@ -22,6 +22,22 @@ builder.Services.AddDependencyInjections(connString);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+const string frontendCorsPolicy = "MedMinderFrontend";
+
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(frontendCorsPolicy, policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .WithMethods("GET", "POST", "PUT")
+              .WithHeaders("Content-Type");
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment() ||
@@ -36,7 +52,10 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseRouting();
+app.UseCors(frontendCorsPolicy);
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.MapGet("/", () => Results.Ok(new

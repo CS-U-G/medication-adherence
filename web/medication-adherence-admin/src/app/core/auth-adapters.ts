@@ -1,11 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { TimeoutError } from 'rxjs';
 import { DEMO_ADMIN_EMAIL, DEMO_PASSWORD } from './demo-fixtures';
 import { matchesDemoPassword } from './demo-password';
 import { DemoStore } from './demo-store';
-import { AppMode, Role, Session } from './models';
+import { AppMode, Session } from './models';
 import { MedMinderApi } from './api.service';
-import { WebLoginResponse } from './api.models';
 
 type Identity = Pick<Session, 'id' | 'name' | 'email' | 'role'>;
 
@@ -37,29 +37,26 @@ export class DemoAuthAdapter implements AuthAdapter {
   }
 }
 
-function staffRole(role: WebLoginResponse['role']): Role {
-  if (role === 'Admin') return 'admin';
-  if (role === 'Doctor') return 'doctor';
-  throw new Error('This account does not have staff access.');
-}
-
 @Injectable({ providedIn: 'root' })
 export class HttpAuthAdapter implements AuthAdapter {
   private readonly api = inject(MedMinderApi);
 
   async signIn(email: string, password: string): Promise<Identity> {
-    const result = await this.api.login({ email, password }).catch((error: unknown) => {
+    await this.api.login({ email, password }).catch((error: unknown) => {
+      if (error instanceof TimeoutError) throw new Error('The staff sign-in request timed out. Check service availability and try again.');
       if (error instanceof HttpErrorResponse) {
-        if (error.status === 0) throw new Error('The staff sign-in service could not be reached. Check the API connection and try again.');
+        if (error.status === 0) throw new Error('The staff sign-in service could not be reached from this browser. Check service availability and try again.');
+        if (error.status === 400) throw new Error('Check your email and password and try again.');
         if (error.status === 401) throw new Error('The email or password was rejected, or the account is inactive.');
         if (error.status === 403) throw new Error('The server denied staff access for this account.');
+        if ([502, 503, 504].includes(error.status)) throw new Error(`The staff sign-in service is temporarily unavailable (HTTP ${error.status}). Try again later.`);
+        if (error.status >= 200 && error.status < 300) throw new Error('The server returned an unexpected sign-in response.');
         throw new Error(`The staff sign-in service returned HTTP ${error.status}. Please try again.`);
       }
       throw error;
     });
 
-    staffRole(result.role);
-    // This checkout returns a profile but does not issue a backend-authorized session.
+    // The API returns a profile but does not issue a backend-authorized session.
     throw new Error('The server accepted the credentials but could not establish a protected staff session. Ask your administrator to enable staff authorization on the API.');
   }
 }
