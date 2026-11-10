@@ -1,0 +1,28 @@
+<div class="portal">
+  <aside class="sidebar" [class.sidebar-open]="mobileNav()" id="workspace-navigation">
+    <div class="side-brand"><mm-brand [caption]="role() === 'doctor' ? 'Doctor workspace' : 'Admin workspace'"/></div>
+    <nav aria-label="Workspace" class="side-nav">
+      <div class="nav-label">WORKSPACE</div>
+      @for (link of links(); track link.path; let first=$first) {
+        <a [routerLink]="link.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:first}" ariaCurrentWhenActive="page" (click)="mobileNav.set(false)"><mm-icon [name]="link.icon"/>{{link.label}}</a>
+      }
+      <div class="nav-label account-label">ACCOUNT</div>
+      <a [routerLink]="['/',role(),'settings']" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="mobileNav.set(false)"><mm-icon name="settings"/>Account settings</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="profile"><span class="avatar">{{initials()}}</span><div><strong>{{auth.session()?.name}}</strong><small>{{role() === 'doctor' ? 'Doctor' : 'Administrator'}}</small></div></div>
+      <button class="side-out" type="button" (click)="signOut()"><mm-icon name="logout"/>Sign out</button>
+    </div>
+  </aside>
+  <div class="portal-work">
+    <header class="portal-top">
+      <div class="top-left">
+        <button class="icon-button nav-toggle" type="button" aria-label="Toggle workspace navigation" aria-controls="workspace-navigation" [attr.aria-expanded]="mobileNav()" (click)="mobileNav.update(value => !value)"><mm-icon [name]="mobileNav() ? 'close' : 'menu'"/></button>
+        <span class="top-role">{{role() === 'doctor' ? 'Doctor workspace' : 'Admin workspace'}}</span><mm-icon name="chevron" class="top-chevron"/><strong>{{title()}}</strong>
+      </div>
+      <div class="top-right">@if (auth.mode()==='demo') {<span class="badge badge-demo">Demo mode</span>}<a [routerLink]="['/',role(),'settings']" class="avatar top-avatar" aria-label="Account settings">{{initials()}}</a></div>
+    </header>
+    <main class="portal-content" id="main"><router-outlet/></main>
+    <footer class="portal-footer">MedMinder <span>·</span> {{auth.mode() === 'demo' ? 'Demo workspace · Fictional data' : 'Staff workspace'}}</footer>
+  </div>
+</div>

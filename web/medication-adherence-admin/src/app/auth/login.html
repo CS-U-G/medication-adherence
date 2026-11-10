@@ -1,0 +1,44 @@
+<div class="login-page">
+  <header class="login-header"><mm-brand/><a class="text-link" routerLink="/"><mm-icon name="arrow-left"/> Back to homepage</a></header>
+  <main class="login-main" id="main">
+    <section class="login-story">
+      <div class="story-copy">
+        <span class="story-label"><mm-icon name="shield"/> MEDMINDER STAFF PORTAL</span>
+        <h2>See what happens between visits.</h2>
+        <p>A dedicated workspace for the people supporting everyday medication routines.</p>
+      </div>
+      <div class="story-roles">
+        <div><span><mm-icon name="stethoscope"/></span><div><strong>For doctors</strong><small>Patient records and clinical follow-up.</small></div></div>
+        <div><span><mm-icon name="shield"/></span><div><strong>For administrators</strong><small>Staff accounts and platform management.</small></div></div>
+      </div>
+    </section>
+    <section class="login-form card">
+      <div class="login-top"><span class="metric-icon"><mm-icon name="lock"/></span>@if (auth.mode()==='demo') {<span class="badge badge-demo">Demo mode</span>}</div>
+      <h1>Staff sign in</h1>
+      <p>{{auth.mode()==='demo' ? 'Explore a workspace with fictional records.' : 'Submit your staff credentials to the MedMinder API for verification.'}}</p>
+      @if(auth.mode()==='live') {
+        <div class="notice access-notice"><strong>Staff workspace access is unavailable.</strong><p>Submitting this form cannot open a workspace until the server can start a secure staff session.</p><a class="text-link" routerLink="/availability">View service availability <mm-icon name="arrow"/></a></div>
+      }
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="busy()">
+        <label class="field" for="staff-email">Email address
+          <input id="staff-email" type="email" formControlName="email" autocomplete="username" placeholder="name@example.com" [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid ? 'true' : null" [attr.aria-describedby]="form.controls.email.touched && form.controls.email.invalid ? 'email-error' : null">
+        </label>
+        @if(form.controls.email.touched && form.controls.email.invalid) {<small id="email-error" class="error-text">Enter a valid email address.</small>}
+        <label class="field" for="staff-password">Password</label>
+        <div class="password-field"><input id="staff-password" [type]="visible() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" placeholder="Enter your password" [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid ? 'true' : null" [attr.aria-describedby]="form.controls.password.touched && form.controls.password.invalid ? 'password-error' : null"><button type="button" [attr.aria-label]="visible() ? 'Hide password' : 'Show password'" (click)="visible.update(value => !value)"><mm-icon [name]="visible() ? 'eye-off' : 'eye'"/></button></div>
+        @if(form.controls.password.touched && form.controls.password.invalid) {<small id="password-error" class="error-text">Enter your password.</small>}
+        @if(error()) {<div class="notice error" role="alert">{{error()}}</div>}
+        <button class="btn sign-in" [disabled]="busy()" type="submit">{{busy() ? 'Verifying…' : auth.mode()==='live' ? 'Verify credentials' : 'Sign in'}} <mm-icon name="arrow"/></button>
+      </form>
+      @if(auth.mode()==='demo') {
+        <div class="login-demo"><div class="demo-separator"><span>Try a demo workspace</span></div>
+          <div class="demo-buttons"><button type="button" class="btn btn-outline" [disabled]="busy()" (click)="demo('doctor')"><mm-icon name="stethoscope"/> Enter Doctor Demo</button><button type="button" class="btn btn-outline" [disabled]="busy()" (click)="demo('admin')"><mm-icon name="shield"/> Enter Admin Demo</button></div>
+        </div>
+      }
+      @if (auth.mode()==='live') {
+        <div class="login-access"><mm-icon name="info"/><p><strong>New to MedMinder?</strong> <a class="text-link" routerLink="/register">Create a doctor account</a>. Patients use the mobile app.</p></div>
+      }
+    </section>
+  </main>
+  <footer class="login-footer">MedMinder · Medication Adherence Project</footer>
+</div>

@@ -1,0 +1,59 @@
+<a class="text-link back-link" routerLink="/doctor/patients"><mm-icon name="arrow" /> Patient directory</a>
+@if (patient(); as record) {
+  <header class="page-heading">
+    <div><div class="eyebrow">Patient record</div><h1>{{ record.name }}</h1><p>{{ record.id }} · Registered {{ record.createdAt | date:'mediumDate' }}</p></div>
+    <div class="actions">
+      <a class="btn btn-secondary" routerLink="/doctor/reports" [queryParams]="{patient: record.id}"><mm-icon name="chart" /> View report</a>
+      <a class="btn" routerLink="/doctor/prescriptions/new" [queryParams]="{patient: record.id}"><mm-icon name="plus" /> New prescription</a>
+    </div>
+  </header>
+
+  @if (issued()) { <p class="notice registration-notice" role="status"><strong>Prescription issued.</strong> It now appears in this patient’s prescription history.</p> }
+
+  <div class="detail-layout">
+    <section class="card card-pad" aria-labelledby="profile-title">
+      <div class="panel-heading">
+        <div class="patient-identity"><span class="avatar" aria-hidden="true">{{ initials(record.name) }}</span><div><h2 id="profile-title">Patient information</h2><p>Contact and registration details</p></div></div>
+      </div>
+      <dl class="profile-data">
+        <div><dt>Email address</dt><dd>{{ record.email }}</dd></div>
+        <div><dt>Phone number</dt><dd>{{ record.phone || 'Not provided' }}</dd></div>
+        <div><dt>Date of birth</dt><dd>{{ (record.dob | date:'mediumDate') || 'Not provided' }}</dd></div>
+        <div><dt>Gender</dt><dd>{{ record.gender || 'Not provided' }}</dd></div>
+        @if (record.notes) { <div class="wide"><dt>Notes</dt><dd class="multiline">{{ record.notes }}</dd></div> }
+      </dl>
+    </section>
+    <aside class="card card-pad help-card">
+      <span class="metric-icon"><mm-icon name="activity" /></span>
+      <h2>Weekly adherence</h2>
+      <p>Recorded dose outcomes over the last 7 days.</p>
+      <div class="quick-rate"><strong>{{ rate() === null ? '—' : rate() + '%' }}</strong><span class="badge" [class]="status().tone">{{ status().label }}</span></div>
+      <a class="text-link" routerLink="/doctor/reports" [queryParams]="{patient: record.id}">Open adherence report <mm-icon name="arrow" /></a>
+    </aside>
+  </div>
+
+  <section class="card card-pad history" aria-labelledby="history-title">
+    <div class="panel-heading"><div><h2 id="history-title">Prescription history</h2><p>Medication items and their source are shown for each record.</p></div></div>
+    @for (prescription of prescriptions(); track prescription.id) {
+      <article class="prescription-record">
+        <div class="record-head">
+          <div><h3>{{ prescription.id }}</h3><p>Issued {{ prescription.issuedAt | date:'mediumDate' }}</p></div>
+          <span class="badge" [class.badge-green]="prescription.status === 'Active'">{{ prescription.status }}</span>
+        </div>
+        <ul class="medication-list">
+          @for (item of prescription.items; track item.id) {
+            <li><span class="metric-icon"><mm-icon name="pill" /></span><div><strong>{{ item.medicationName }}</strong><p>{{ item.dose }} · {{ item.frequency }} · {{ item.duration }} {{ item.duration === 1 ? 'day' : 'days' }}</p></div><span class="badge" [class]="medicationSourceTone(item.source)">{{ item.source }}</span></li>
+          }
+        </ul>
+        @if (prescription.notes) { <p class="record-notes multiline"><strong>Notes:</strong> {{ prescription.notes }}</p> }
+      </article>
+    } @empty {
+      <div class="empty-state"><h3>No prescriptions yet</h3><p>Issue a prescription to add medication instructions to this record.</p><a class="btn btn-secondary" routerLink="/doctor/prescriptions/new" [queryParams]="{patient: record.id}">New prescription</a></div>
+    }
+  </section>
+} @else {
+  <section class="card empty-state">
+    <h1>Patient record unavailable</h1><p>Return to the directory to find a patient in your roster.</p>
+    <a class="btn" routerLink="/doctor/patients">Return to patient directory</a>
+  </section>
+}
