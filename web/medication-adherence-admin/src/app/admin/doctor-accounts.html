@@ -11,7 +11,9 @@
   <header class="directory-heading">
     <div>
       <h2 id="directory-title">All doctors</h2>
-      <p aria-live="polite">{{ results().length }} of {{ data.doctors().length }} accounts</p>
+      @if (!loading() && !error()) {
+        <p aria-live="polite">{{ results().length }} of {{ doctors().length }} accounts</p>
+      }
     </div>
     <div class="directory-filters">
       <label class="directory-search">
@@ -30,7 +32,14 @@
     </div>
   </header>
 
-  @if (results().length) {
+  @if (loading()) {
+    <div class="empty-state" role="status"><p>Loading doctor accounts…</p></div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <p role="alert">{{ error() }}</p>
+      <button class="btn btn-secondary" type="button" (click)="loadDoctors()">Try again</button>
+    </div>
+  } @else if (results().length) {
     <table class="management-table" role="table" aria-labelledby="directory-title">
       <thead role="rowgroup">
         <tr role="row">

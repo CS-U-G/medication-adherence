@@ -3,14 +3,21 @@
   <div><div class="eyebrow">Patient care</div><h1>New prescription</h1><p>Choose a patient and add one or more medications to their care plan.</p></div>
 </header>
 
-@if (data.patients().length && medications().length) {
+@if (loading()) {
+  <section class="card empty-state" role="status"><p>Loading patients and medications…</p></section>
+} @else if (loadError()) {
+  <section class="card empty-state">
+    <h2>Prescription options unavailable</h2><p role="alert">{{ loadError() }}</p>
+    <button class="btn btn-secondary" type="button" (click)="loadOptions()">Try again</button>
+  </section>
+} @else if (patients().length && medications().length) {
   <div class="detail-layout">
     <form class="card card-pad form-section" [formGroup]="form" (ngSubmit)="openReview(reviewDialog)" novalidate>
       <div class="panel-heading"><div><h2>Prescription details</h2><p>Review these instructions before issuing them to the patient.</p></div></div>
       <label class="field">Patient
         <select formControlName="patientId" required [attr.aria-invalid]="form.controls.patientId.touched && form.controls.patientId.invalid || null">
           <option value="">Select a patient</option>
-          @for (patient of data.patients(); track patient.id) { <option [value]="patient.id">{{ patient.name }}</option> }
+          @for (patient of patients(); track patient.id) { <option [value]="patient.id">{{ patient.name }}</option> }
         </select>
         @if (form.controls.patientId.touched && form.controls.patientId.invalid) { <small class="field-error">Choose a patient.</small> }
       </label>
@@ -24,7 +31,7 @@
             <label class="field">Medication
               <select formControlName="medicationId" required [attr.aria-invalid]="item.controls.medicationId.touched && item.controls.medicationId.invalid || null">
                 <option value="">Select a medication</option>
-                @for (medication of medications(); track medication.id) { <option [value]="medication.id">{{ medicationLabel(medication.id) }}</option> }
+                @for (medication of medications(); track medication.id) { <option [value]="medication.id">{{ medicationLabel(medication) }}</option> }
               </select>
               @if (item.controls.medicationId.touched && item.controls.medicationId.invalid) { <small class="field-error">Choose a medication.</small> }
             </label>
@@ -36,14 +43,16 @@
             <label class="field">Frequency
               <select formControlName="frequency" required [attr.aria-invalid]="item.controls.frequency.touched && item.controls.frequency.invalid || null">
                 <option value="">Select frequency</option>
-                @for (frequency of frequencies; track frequency) { <option>{{ frequency }}</option> }
+                @for (frequency of frequencies; track frequency.value) { <option [value]="frequency.value">{{ frequency.label }}</option> }
               </select>
               @if (item.controls.frequency.touched && item.controls.frequency.invalid) { <small class="field-error">Choose a frequency.</small> }
             </label>
             <label class="field">Duration (days)
-              <input type="number" formControlName="duration" min="1" step="1" placeholder="Days" required
+              <input type="number" formControlName="duration" min="1" [attr.max]="maximumDuration" step="1" placeholder="Days" required
                 [attr.aria-invalid]="item.controls.duration.touched && item.controls.duration.invalid || null" />
-              @if (item.controls.duration.touched && item.controls.duration.invalid) { <small class="field-error">Enter a positive whole number of days.</small> }
+              @if (item.controls.duration.touched && item.controls.duration.invalid) {
+                <small class="field-error">{{ item.controls.duration.hasError('max') ? 'Enter a duration within the supported calendar range.' : 'Enter a positive whole number of days.' }}</small>
+              }
             </label>
           </fieldset>
         }
@@ -64,7 +73,7 @@
       <p>Set the dose, frequency, and duration here. The patient chooses exact reminder times in the mobile app.</p>
     </aside>
   </div>
-} @else if (!data.patients().length) {
+} @else if (!patients().length) {
   <section class="card empty-state">
     <h2>No patients registered</h2><p>Register a patient before issuing a prescription.</p>
     <a class="btn" routerLink="/doctor/patients/register">Register patient</a>
@@ -76,21 +85,21 @@
   </section>
 }
 
-<dialog #reviewDialog aria-labelledby="prescription-review-title">
+<dialog #reviewDialog aria-labelledby="prescription-review-title" (cancel)="issuing() && $event.preventDefault()">
   <span class="metric-icon dialog-icon"><mm-icon name="file" /></span>
   <h2 id="prescription-review-title">Review prescription</h2>
   @if (review(); as draft) {
     <p>Check the medication instructions for <strong>{{ patientName(draft.patientId) }}</strong>.</p>
     <ul class="review-medications">
       @for (item of draft.items; track $index) {
-        <li><strong>{{ medicationLabel(item.medicationId) }}</strong><small>{{ item.dose }} · {{ item.frequency }} · {{ item.duration }} {{ item.duration === 1 ? 'day' : 'days' }}</small></li>
+        <li><strong>{{ medicationName(item.medicationId) }}</strong><small>{{ item.dose }} · {{ frequencyLabel(item.frequency) }} · {{ item.duration }} {{ item.duration === 1 ? 'day' : 'days' }}</small></li>
       }
     </ul>
     @if (draft.notes) { <p class="multiline"><strong>Notes:</strong> {{ draft.notes }}</p> }
     @if (error()) { <p role="alert" class="notice error">{{ error() }}</p> }
     <div class="actions">
-      <button class="btn btn-secondary" type="button" (click)="reviewDialog.close()">Back to editing</button>
-      <button class="btn" type="button" (click)="issue(reviewDialog)">Issue prescription</button>
+      <button class="btn btn-secondary" type="button" [disabled]="issuing()" (click)="reviewDialog.close()">Back to editing</button>
+      <button class="btn" type="button" [disabled]="issuing()" (click)="issue(reviewDialog)">{{ issuing() ? 'Issuing…' : 'Issue prescription' }}</button>
     </div>
   }
 </dialog>

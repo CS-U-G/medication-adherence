@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Injector } from '@angular/core';
 import { AuthService } from './auth.service';
 import { storeDemoPassword } from './demo-password';
 import { DemoStore } from './demo-store';
@@ -36,7 +36,8 @@ function emailAddress(email: string): string {
 @Injectable({ providedIn: 'root' })
 export class MedMinderData {
   private readonly auth = inject(AuthService);
-  private readonly store = inject(DemoStore);
+  private readonly injector = inject(Injector);
+  private get store(): DemoStore { return this.injector.get(DemoStore); }
   private readonly demoSession = computed(() => {
     const session = this.auth.session();
     return session?.mode === 'demo' ? session : null;
@@ -44,20 +45,23 @@ export class MedMinderData {
 
   readonly doctors = computed<readonly DoctorAccount[]>(() => {
     const session = this.demoSession();
-    if (session?.role === 'admin') return this.store.state().doctors;
-    return this.store.state().doctors.filter(account => account.id === session?.id);
+    if (!session) return [];
+    if (session.role === 'admin') return this.store.state().doctors;
+    return this.store.state().doctors.filter(account => account.id === session.id);
   });
 
   readonly patients = computed<readonly Patient[]>(() => {
     const session = this.demoSession();
-    if (session?.role === 'admin') return this.store.state().patients;
-    return this.store.state().patients.filter(patient => patient.doctorId === session?.id);
+    if (!session) return [];
+    if (session.role === 'admin') return this.store.state().patients;
+    return this.store.state().patients.filter(patient => patient.doctorId === session.id);
   });
 
   readonly prescriptions = computed<readonly Prescription[]>(() => {
     const session = this.demoSession();
-    if (session?.role === 'admin') return this.store.state().prescriptions;
-    return this.store.state().prescriptions.filter(prescription => prescription.doctorId === session?.id);
+    if (!session) return [];
+    if (session.role === 'admin') return this.store.state().prescriptions;
+    return this.store.state().prescriptions.filter(prescription => prescription.doctorId === session.id);
   });
 
   readonly medications = computed<readonly Medication[]>(() =>
@@ -65,6 +69,7 @@ export class MedMinderData {
   );
 
   readonly doses = computed(() => {
+    if (!this.demoSession()) return [];
     const patientIds = new Set(this.patients().map(patient => patient.id));
     return this.store.state().doses.filter(dose => patientIds.has(dose.patientId));
   });

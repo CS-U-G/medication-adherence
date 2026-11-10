@@ -1,9 +1,15 @@
 <a class="text-link back-link" routerLink="/doctor/patients"><mm-icon name="arrow" /> Patient directory</a>
-@if (patient(); as record) {
+@if (record.isLoading()) {
+  <p class="card empty-state" role="status">Loading patient record…</p>
+} @else if (record.error()) {
+  <section class="card empty-state"><h1>Patient record unavailable</h1><p role="alert">The patient record could not be loaded from your directory.</p>
+    <button class="btn btn-secondary" type="button" (click)="record.reload()">Try again</button>
+  </section>
+} @else if (patient(); as record) {
   <header class="page-heading">
-    <div><div class="eyebrow">Patient record</div><h1>{{ record.name }}</h1><p>{{ record.id }} · Registered {{ record.createdAt | date:'mediumDate' }}</p></div>
+    <div><div class="eyebrow">Patient record</div><h1>{{ record.name }}</h1><p>@if (live) { Patient #{{ record.id }} } @else { {{ record.id }} · Registered {{ record.createdAt | date:'mediumDate' }} }</p></div>
     <div class="actions">
-      <a class="btn btn-secondary" routerLink="/doctor/reports" [queryParams]="{patient: record.id}"><mm-icon name="chart" /> View report</a>
+      @if (!live) { <a class="btn btn-secondary" routerLink="/doctor/reports" [queryParams]="{patient: record.id}"><mm-icon name="chart" /> View report</a> }
       <a class="btn" routerLink="/doctor/prescriptions/new" [queryParams]="{patient: record.id}"><mm-icon name="plus" /> New prescription</a>
     </div>
   </header>
@@ -16,25 +22,49 @@
         <div class="patient-identity"><span class="avatar" aria-hidden="true">{{ initials(record.name) }}</span><div><h2 id="profile-title">Patient information</h2><p>Contact and registration details</p></div></div>
       </div>
       <dl class="profile-data">
-        <div><dt>Email address</dt><dd>{{ record.email }}</dd></div>
+        @if (!live) { <div><dt>Email address</dt><dd>{{ record.email }}</dd></div> }
         <div><dt>Phone number</dt><dd>{{ record.phone || 'Not provided' }}</dd></div>
         <div><dt>Date of birth</dt><dd>{{ (record.dob | date:'mediumDate') || 'Not provided' }}</dd></div>
         <div><dt>Gender</dt><dd>{{ record.gender || 'Not provided' }}</dd></div>
+        @if (livePatient(); as patient) {
+          <div><dt>Account status</dt><dd><span class="badge" [class.badge-green]="patient.isActive">{{ patient.isActive ? 'Active' : 'Inactive' }}</span></dd></div>
+        }
         @if (record.notes) { <div class="wide"><dt>Notes</dt><dd class="multiline">{{ record.notes }}</dd></div> }
       </dl>
+      @if (livePatient(); as patient) {
+        <div class="actions record-actions">
+          <button class="btn btn-secondary" type="button" [disabled]="mutating()" (click)="openEdit(editDialog)">Edit details</button>
+          <button class="btn btn-secondary" type="button" [disabled]="mutating()" (click)="openCode(accessDialog)">Manage access code</button>
+          <button class="btn btn-secondary" type="button" [disabled]="mutating()" (click)="toggleStatus()">
+            {{ patient.isActive ? 'Deactivate access' : 'Activate access' }}
+          </button>
+        </div>
+        @if (mutating() && !editDialog.open && !accessDialog.open) { <p class="record-actions" role="status">Updating patient access…</p> }
+        @if (feedback() && !editDialog.open && !accessDialog.open) { <p class="notice record-actions" role="status">{{ feedback() }}</p> }
+        @if (failure() && !editDialog.open && !accessDialog.open) { <p class="notice error record-actions" role="alert">{{ failure() }}</p> }
+      }
     </section>
     <aside class="card card-pad help-card">
       <span class="metric-icon"><mm-icon name="activity" /></span>
       <h2>Weekly adherence</h2>
-      <p>Recorded dose outcomes over the last 7 days.</p>
-      <div class="quick-rate"><strong>{{ rate() === null ? '—' : rate() + '%' }}</strong><span class="badge" [class]="status().tone">{{ status().label }}</span></div>
-      <a class="text-link" routerLink="/doctor/reports" [queryParams]="{patient: record.id}">Open adherence report <mm-icon name="arrow" /></a>
+      @if (live) {
+        <p>Live adherence reporting is currently unavailable.</p>
+      } @else {
+        <p>Recorded dose outcomes over the last 7 days.</p>
+        <div class="quick-rate"><strong>{{ rate() === null ? '—' : rate() + '%' }}</strong><span class="badge" [class]="status().tone">{{ status().label }}</span></div>
+        <a class="text-link" routerLink="/doctor/reports" [queryParams]="{patient: record.id}">Open adherence report <mm-icon name="arrow" /></a>
+      }
     </aside>
   </div>
 
   <section class="card card-pad history" aria-labelledby="history-title">
     <div class="panel-heading"><div><h2 id="history-title">Prescription history</h2><p>Medication items and their source are shown for each record.</p></div></div>
-    @for (prescription of prescriptions(); track prescription.id) {
+    @if (history.isLoading()) {
+      <p class="empty-state" role="status">Loading prescription history…</p>
+    } @else if (history.error()) {
+      <div class="empty-state"><p role="alert">Prescription history could not be loaded.</p><button class="btn btn-secondary" type="button" (click)="history.reload()">Try again</button></div>
+    } @else {
+      @for (prescription of prescriptions(); track prescription.id) {
       <article class="prescription-record">
         <div class="record-head">
           <div><h3>{{ prescription.id }}</h3><p>Issued {{ prescription.issuedAt | date:'mediumDate' }}</p></div>
@@ -47,10 +77,73 @@
         </ul>
         @if (prescription.notes) { <p class="record-notes multiline"><strong>Notes:</strong> {{ prescription.notes }}</p> }
       </article>
-    } @empty {
-      <div class="empty-state"><h3>No prescriptions yet</h3><p>Issue a prescription to add medication instructions to this record.</p><a class="btn btn-secondary" routerLink="/doctor/prescriptions/new" [queryParams]="{patient: record.id}">New prescription</a></div>
+      } @empty {
+        <div class="empty-state"><h3>No prescriptions yet</h3><p>Issue a prescription to add medication instructions to this record.</p><a class="btn btn-secondary" routerLink="/doctor/prescriptions/new" [queryParams]="{patient: record.id}">New prescription</a></div>
+      }
     }
   </section>
+
+  <dialog #editDialog aria-labelledby="edit-patient-title" (cancel)="mutating() && $event.preventDefault()">
+    <h2 id="edit-patient-title">Edit patient information</h2>
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit(editDialog)" novalidate>
+      <div class="form-grid record-actions" [attr.inert]="mutating() ? '' : null">
+        <label class="field">Full name
+          <input formControlName="name" required [attr.aria-invalid]="editForm.controls.name.touched && editForm.controls.name.invalid || null" />
+          @if (editForm.controls.name.touched && editForm.controls.name.invalid) { <small class="field-error">Enter a full name (up to 100 characters).</small> }
+        </label>
+        <label class="field">Phone number
+          <input type="tel" formControlName="phone" maxlength="20" [attr.aria-invalid]="editForm.controls.phone.touched && editForm.controls.phone.invalid || null" />
+          @if (editForm.controls.phone.touched && editForm.controls.phone.invalid) { <small class="field-error">Enter up to 20 characters.</small> }
+        </label>
+        <label class="field">Date of birth
+          <input type="date" formControlName="dob" [max]="today" required [attr.aria-invalid]="editForm.controls.dob.touched && editForm.controls.dob.invalid || null" />
+          @if (editForm.controls.dob.touched && editForm.controls.dob.invalid) { <small class="field-error">Enter a valid birth date that is today or earlier.</small> }
+        </label>
+        <label class="field">Gender
+          <select formControlName="gender" required [attr.aria-invalid]="editForm.controls.gender.touched && editForm.controls.gender.invalid || null">
+            <option value="">Select gender</option><option value="F">Female</option><option value="M">Male</option>
+            @if (livePatient()?.gender; as gender) {
+              @if (gender !== 'M' && gender !== 'F') { <option [value]="gender">Previously unspecified</option> }
+            }
+          </select>
+          @if (editForm.controls.gender.touched && editForm.controls.gender.invalid) { <small class="field-error">Select the patient’s gender.</small> }
+        </label>
+        <label class="field wide">Notes
+          <textarea formControlName="notes" maxlength="500"></textarea>
+          @if (editForm.controls.notes.touched && editForm.controls.notes.invalid) { <small class="field-error">Enter up to 500 characters.</small> }
+        </label>
+      </div>
+      @if (failure() && editDialog.open) { <p class="notice error record-actions" role="alert">{{ failure() }}</p> }
+      <div class="actions">
+        <button class="btn btn-secondary" type="button" [disabled]="mutating()" (click)="editDialog.close()">Cancel</button>
+        <button class="btn" type="submit" [disabled]="mutating()">{{ mutating() ? 'Saving…' : 'Save details' }}</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog #accessDialog aria-labelledby="manage-code-title" (cancel)="mutating() && $event.preventDefault()">
+    <h2 id="manage-code-title">Patient access code</h2>
+    @if (livePatient(); as patient) {
+      <p>Share this code privately with {{ patient.fullName }}. Generating a new code replaces the current one.</p>
+      @if (codeUnconfirmed()) {
+        <p class="notice error" role="alert">The replacement access code could not be confirmed. Reload the record to check the current code.</p>
+      } @else {
+        <div class="access-code">
+          <input #codeField aria-label="Access code" readonly [value]="patient.patientAccessCode" />
+          <button class="btn btn-secondary" type="button" [disabled]="mutating()" (click)="copyCode(codeField)">Copy code</button>
+        </div>
+        <p class="copy-feedback" role="status">{{ copyStatus() || (accessDialog.open ? feedback() : '') }}</p>
+      }
+      <div class="actions">
+        <button class="btn btn-secondary" type="button" [disabled]="mutating()" (click)="accessDialog.close()">Done</button>
+        @if (codeUnconfirmed()) {
+          <button class="btn" type="button" (click)="reloadCode(accessDialog)">Reload patient record</button>
+        } @else {
+          <button class="btn" type="button" [disabled]="mutating()" (click)="regenerateCode()">{{ mutating() ? 'Generating…' : 'Generate new code' }}</button>
+        }
+      </div>
+    }
+  </dialog>
 } @else {
   <section class="card empty-state">
     <h1>Patient record unavailable</h1><p>Return to the directory to find a patient in your roster.</p>
