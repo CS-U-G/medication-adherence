@@ -17,8 +17,8 @@ namespace MedicationAdherence.DAL.Models
         public string Dosage { get; set; } = string.Empty;
         public short FrequencyPerDay { get; set; }
         public int DurationDays { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public string? Instructions { get; set; }
         public enScheduleStatus ScheduleStatus { get; set; }
 
