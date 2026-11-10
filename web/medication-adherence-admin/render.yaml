@@ -1,0 +1,30 @@
+# Select this path when creating a Render Blueprint; keep all deployment files in web/.
+services:
+  - type: web
+    name: medminder-web
+    runtime: static
+    rootDir: web/medication-adherence-admin
+    buildCommand: npm ci && npm run configure && npm run build
+    staticPublishPath: dist/medication-adherence-admin/browser
+    envVars:
+      - key: NODE_VERSION
+        value: 24.15.0
+      - key: MEDMINDER_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /app-config.json
+        name: Cache-Control
+        value: no-store
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache

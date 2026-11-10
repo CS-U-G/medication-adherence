@@ -1,0 +1,22 @@
+*,*::before,*::after{box-sizing:border-box}
+html{min-width:320px;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{font-weight:400}
+a{color:var(--green);text-decoration:none}
+button{cursor:pointer}
+:where(a,button,input,select,textarea,summary):focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+img,svg{display:block;max-width:100%}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{line-height:1.15;letter-spacing:-.035em}
+p{color:var(--muted)}
+small,.muted{color:var(--muted)}
+strong,b{font-weight:700}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:fixed;top:8px;left:8px;z-index:100;transform:translateY(-160%)}.skip-link:focus{transform:none}
+.brand{display:inline-flex;align-items:center;gap:9px;color:var(--ink);font-size:22px;font-weight:800;letter-spacing:-.065em;line-height:1.05;white-space:nowrap}
+.brand>span>span{color:var(--green)}
+.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;overflow:hidden;background:#fff}
+.brand-mark img{width:39px;height:39px;max-width:none;object-fit:cover;transform:translateY(6px) scale(1.72)}
+.brand small{display:block;color:var(--muted);font-size:10px;font-weight:650;letter-spacing:.02em;margin-top:4px}
+

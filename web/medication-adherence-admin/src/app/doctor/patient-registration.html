@@ -1,0 +1,76 @@
+<a class="text-link back-link" routerLink="/doctor/patients"><mm-icon name="arrow" /> Patient directory</a>
+<header class="page-heading">
+  <div><div class="eyebrow">Patient care</div><h1>Register patient</h1><p>Create a patient record and generate an access code for the mobile app.</p></div>
+</header>
+
+@if (patient(); as registered) {
+  <div class="notice registration-notice" role="status">
+    <span><strong>{{ registered.name }} was registered.</strong> Their record is now in the patient directory.</span>
+    <a class="text-link" [routerLink]="['/doctor/patients', registered.id]">View patient record <mm-icon name="arrow" /></a>
+  </div>
+}
+
+<div class="detail-layout">
+  <form class="card card-pad form-section" [formGroup]="form" (ngSubmit)="save(codeDialog)" novalidate>
+    <div class="panel-heading"><div><h2>Patient information</h2><p>Enter the details used to identify and contact this patient.</p></div></div>
+    <div class="form-grid">
+      <label class="field">Full name
+        <input formControlName="name" autocomplete="off" placeholder="e.g. Jordan Lee" required
+          [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid || null" />
+        @if (form.controls.name.touched && form.controls.name.invalid) { <small class="field-error">Enter a full name (up to 100 characters).</small> }
+      </label>
+      <label class="field">Email address
+        <input type="email" formControlName="email" autocomplete="off" placeholder="patient@example.com" required
+          [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid || null" />
+        @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Enter a valid email address.</small> }
+      </label>
+      <label class="field">Date of birth
+        <input type="date" formControlName="dob" [max]="today" required
+          [attr.aria-invalid]="form.controls.dob.touched && form.controls.dob.invalid || null" />
+        @if (form.controls.dob.touched && form.controls.dob.invalid) { <small class="field-error">Enter a valid birth date that is today or earlier.</small> }
+      </label>
+      <label class="field">Phone number <span class="sr-only">(optional)</span>
+        <input type="tel" formControlName="phone" autocomplete="off" placeholder="Optional"
+          [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid || null" />
+        @if (form.controls.phone.touched && form.controls.phone.invalid) { <small class="field-error">Enter a valid phone number.</small> }
+      </label>
+      <label class="field">Gender
+        <select formControlName="gender">
+          <option value="">Select if known</option><option>Female</option><option>Male</option>
+        </select>
+      </label>
+      <label class="field wide">Notes <span class="sr-only">(optional)</span>
+        <textarea formControlName="notes" maxlength="500" placeholder="Anything the care team should know? (Optional)"></textarea>
+      </label>
+    </div>
+    @if (feedback()) { <p role="alert" class="notice error">{{ feedback() }}</p> }
+    <div class="form-actions end-actions">
+      <a class="btn btn-secondary" routerLink="/doctor/patients">Cancel</a>
+      <button class="btn" type="submit"><mm-icon name="plus" /> Register patient</button>
+    </div>
+  </form>
+
+  <aside class="card card-pad help-card">
+    <span class="metric-icon"><mm-icon name="phone" /></span>
+    <h2>Mobile app access</h2>
+    <p>After saving, share the access code with the patient. They use it to connect the mobile app to their record.</p>
+    <ol><li>Register the patient.</li><li>Copy and share the code privately.</li><li>Open the patient record to issue a prescription.</li></ol>
+  </aside>
+</div>
+
+<dialog #codeDialog aria-labelledby="access-code-title">
+  <span class="metric-icon dialog-icon"><mm-icon name="check" /></span>
+  <h2 id="access-code-title">Patient access code</h2>
+  @if (patient(); as registered) {
+    <p>{{ registered.name }} is registered. Share this code privately so they can connect the mobile app.</p>
+    <div class="access-code">
+      <input #codeField aria-label="Access code" readonly [value]="registered.accessCode" />
+      <button class="btn btn-secondary" type="button" (click)="copyCode(codeField)">Copy access code</button>
+    </div>
+    <p class="copy-feedback" role="status">{{ copyStatus() }}</p>
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" (click)="codeDialog.close()">Done</button>
+      <a class="btn" [routerLink]="['/doctor/patients', registered.id]" (click)="codeDialog.close()">View patient record <mm-icon name="arrow" /></a>
+    </div>
+  }
+</dialog>

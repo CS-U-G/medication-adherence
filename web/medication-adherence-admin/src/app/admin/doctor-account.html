@@ -1,0 +1,57 @@
+<a class="text-link management-back" routerLink="/admin/doctors"><mm-icon name="arrow-left" /> Doctor accounts</a>
+
+@if (account(); as doctor) {
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Doctor account</span>
+      <h1>{{ doctor.name }}</h1>
+      <p>{{ doctor.specialty }}</p>
+    </div>
+    <span class="badge" [class.badge-green]="doctor.active">{{ doctor.active ? 'Active' : 'Inactive' }}</span>
+  </header>
+
+  @if (feedback()) { <p class="notice management-feedback" role="status">{{ feedback() }}</p> }
+
+  <div class="management-detail-grid">
+    <section class="card card-pad" aria-labelledby="profile-title">
+      <header class="panel-heading"><div><h2 id="profile-title">Profile information</h2><p>Contact and professional details for this doctor.</p></div></header>
+      <dl class="management-details">
+        <div><dt>Full name</dt><dd>{{ doctor.name }}</dd></div>
+        <div><dt>Work email</dt><dd>{{ doctor.email }}</dd></div>
+        <div><dt>Specialty</dt><dd>{{ doctor.specialty }}</dd></div>
+        <div><dt>License number</dt><dd>{{ doctor.license || 'Not provided' }}</dd></div>
+        <div><dt>Phone number</dt><dd>{{ doctor.phone || 'Not provided' }}</dd></div>
+        <div><dt>Date of birth</dt><dd>{{ (doctor.dob | date:'mediumDate') || 'Not provided' }}</dd></div>
+        <div><dt>Gender</dt><dd>{{ doctor.gender || 'Not provided' }}</dd></div>
+        <div><dt>Account created</dt><dd>{{ (doctor.createdAt | date:'mediumDate') || 'Not recorded' }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="card card-pad access-card" aria-labelledby="access-title">
+      <span class="management-mark" aria-hidden="true"><mm-icon name="shield" /></span>
+      <h2 id="access-title">Portal access</h2>
+      <p>{{ doctor.active ? 'This doctor can sign in and access their workspace.' : 'This doctor cannot sign in. You can restore access at any time.' }}</p>
+      <button class="btn" [class.btn-secondary]="doctor.active" type="button" (click)="openConfirmation()">
+        <mm-icon [name]="doctor.active ? 'lock' : 'check'" /> {{ doctor.active ? 'Deactivate account' : 'Activate account' }}
+      </button>
+    </section>
+  </div>
+
+  <dialog #confirmation aria-labelledby="confirm-doctor-title" aria-describedby="confirm-doctor-description">
+    <span class="management-mark" [class.caution]="doctor.active" aria-hidden="true"><mm-icon [name]="doctor.active ? 'lock' : 'check'" /></span>
+    <h2 id="confirm-doctor-title">{{ doctor.active ? 'Deactivate account?' : 'Activate account?' }}</h2>
+    <p id="confirm-doctor-description">{{ doctor.active ? doctor.name + ' will no longer be able to sign in. Their records will stay in MedMinder.' : doctor.name + ' will be able to sign in again.' }}</p>
+    @if (error()) { <p class="notice error management-dialog-error" role="alert">{{ error() }}</p> }
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" autofocus (click)="confirmation.close()">Cancel</button>
+      <button class="btn" [class.btn-danger]="doctor.active" type="button" (click)="changeAccess()">{{ doctor.active ? 'Deactivate account' : 'Activate account' }}</button>
+    </div>
+  </dialog>
+} @else {
+  <section class="card empty-state">
+    <span class="management-mark" aria-hidden="true"><mm-icon name="users" /></span>
+    <h1>Doctor account unavailable</h1>
+    <p>This account could not be found. Open the directory to choose another account.</p>
+    <a class="btn" routerLink="/admin/doctors">Back to doctor accounts</a>
+  </section>
+}

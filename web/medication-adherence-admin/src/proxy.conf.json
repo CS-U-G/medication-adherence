@@ -1,0 +1,12 @@
+{
+  "/api/**": {
+    "target": "https://medication-adherence.onrender.com",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/health": {
+    "target": "https://medication-adherence.onrender.com",
+    "secure": true,
+    "changeOrigin": true
+  }
+}

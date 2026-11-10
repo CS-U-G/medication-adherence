@@ -1,0 +1,45 @@
+<div class="register-page">
+  <header class="register-header"><mm-brand/><a class="text-link" routerLink="/login"><mm-icon name="arrow-left"/> Staff sign in</a></header>
+  <main id="main" class="register-layout">
+    <aside class="register-story">
+      <div class="eyebrow">For doctors</div>
+      <h1>Your practice.<br>Your patients.<br><em>Your workspace.</em></h1>
+      <p>Create your MedMinder doctor account with your personal and professional details.</p>
+      <div class="story-detail"><mm-icon name="stethoscope"/><div><strong>A dedicated doctor account</strong><p>Registration creates a Doctor role. Administrator accounts are provisioned directly in the database.</p></div></div>
+      <a class="text-link" routerLink="/availability">View service availability <mm-icon name="arrow"/></a>
+    </aside>
+    <section class="card register-form" aria-labelledby="register-title">
+      @if(success()) {
+        <div class="registration-success" role="status" tabindex="-1">
+          <span class="success-icon"><mm-icon name="check"/></span>
+          <h2 id="register-title">Your doctor account is ready</h2>
+          <p>The server confirmed your account was created. You can now return to staff sign in.</p>
+          <p class="notice">Workspace access still depends on the server’s staff session support. Creating an account does not sign you in.</p>
+          <a class="btn" routerLink="/login">Continue to sign in <mm-icon name="arrow"/></a>
+        </div>
+      } @else {
+        <div class="form-intro"><span class="badge badge-green">Doctor registration</span><h2 id="register-title">Create your account</h2><p>Already registered? <a class="text-link" routerLink="/login">Sign in</a></p></div>
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="busy()">
+          <p class="required-note">All fields are required unless marked optional.</p>
+          @for(section of sections; track section.title; let sectionIndex = $index) {
+            <fieldset [disabled]="busy()"><legend><span>0{{sectionIndex + 1}}</span> {{section.title}}</legend><div class="form-grid">
+              @for(field of section.fields; track field.key) {
+                <div class="field" [class.full-width]="field.key==='fullName' || field.key==='email'">
+                  <label [for]="field.key">{{field.label}} @if(!field.required){<small>(optional)</small>}</label>
+                  @if(field.key==='gender') {
+                    <select [id]="field.key" [formControlName]="field.key" [attr.aria-required]="field.required" [attr.aria-invalid]="fieldError(field.key) ? 'true' : null" [attr.aria-describedby]="fieldError(field.key) ? field.key+'-error' : null"><option value="">Select gender</option><option value="F">Female</option><option value="M">Male</option></select>
+                  } @else {
+                    <input [id]="field.key" [type]="field.type" [formControlName]="field.key" [attr.autocomplete]="field.autocomplete" [attr.maxlength]="field.maxLength ?? null" [attr.max]="field.type==='date' ? today : null" [attr.aria-required]="field.required" [attr.aria-invalid]="fieldError(field.key) ? 'true' : null" [attr.aria-describedby]="fieldError(field.key) ? field.key+'-error' : null">
+                  }
+                  @if(fieldError(field.key)){<small [id]="field.key+'-error'" class="error-text">{{fieldError(field.key)}}</small>}
+                </div>
+              }
+            </div></fieldset>
+          }
+          @if(error()){<div class="notice error" role="alert">{{error()}}</div>}
+          <button class="btn register-submit" type="submit" [disabled]="busy()">{{busy() ? 'Creating your account…' : 'Create doctor account'}} <mm-icon name="arrow"/></button>
+        </form>
+      }
+    </section>
+  </main>
+</div>

@@ -1,0 +1,52 @@
+:host{display:block}
+.home{background:#fbfcf8}
+.wrap{width:min(var(--page-width),calc(100% - 104px));margin-inline:auto}
+.home-header{background:#fff;border-bottom:1px solid #e4ece5}
+.header-row{height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.header-row nav{display:flex;align-items:center;gap:32px}
+.header-row nav a,.footer-row>a{font-size:13px;font-weight:700;color:#465d52}
+.header-row nav a:hover,.footer-row>a:hover{color:var(--green);text-decoration:underline;text-underline-offset:4px}
+.hero{border-bottom:1px solid #e0ebe2;background:radial-gradient(ellipse at 82% 45%,#eaf6eb 0%,#f8faf3 51%,#fbfcf8 81%)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(28px,5vw,85px);align-items:center;padding-block:62px 64px}
+.hero-copy h1{font-size:clamp(46px,5.6vw,80px);font-weight:790;line-height:.995;letter-spacing:-.078em;margin:20px 0 22px;max-width:640px}
+.hero-copy em{font-family:Georgia,serif;font-weight:400;letter-spacing:-.095em;color:var(--green);white-space:nowrap}
+.hero-copy>p{font-size:clamp(15px,1.45vw,18px);line-height:1.65;max-width:51ch;color:#3f5a4f}
+.hero-actions{margin-top:28px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.hero-cta{min-height:49px;padding-inline:19px}
+.hero-note{display:flex;align-items:center;gap:7px;font-size:12px;color:#4b6458;margin-top:18px;font-weight:650}
+.step-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:10px;background:#e4f2ea;color:var(--green);font-size:19px;flex:none}
+.how-section,.roles-section{padding-block:64px}
+.home h2{font-size:clamp(28px,3.5vw,44px);margin:10px 0 23px;letter-spacing:-.055em}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.step,.role-card{padding:20px 22px 22px;background:white;border:1px solid var(--line);border-radius:15px}
+.step-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.step-number{font-size:12px;font-weight:800;color:var(--green);letter-spacing:.08em}
+.step h3,.role-card h3{font-size:21px;margin-bottom:7px}.step p,.role-card p{font-size:14px;line-height:1.6}
+.roles-section{background:#edf6ee;border-block:1px solid #deebe0}.roles-section h2{margin-bottom:8px}
+.section-intro{margin-bottom:25px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:20px}.role-card .step-icon{margin-bottom:15px}.role-card p{margin-bottom:18px}
+.home-cta{margin-top:26px;padding:20px 24px;border-radius:15px;background:var(--green-dark);color:white;display:flex;align-items:center;justify-content:space-between;gap:16px}.home-cta h3{font-size:22px}.home-cta p{color:#c6e1d2;margin-top:4px}.home-cta .btn{background:#d7efdc;color:var(--green-dark)}.home-cta .btn:hover{background:white}
+.footer-row{min-height:80px;display:flex;align-items:center;justify-content:space-between;gap:12px}.footer-row p{font-size:12px}
+@media(max-width:960px){.wrap{width:calc(100% - 60px)}.hero-grid{gap:24px}.hero-copy h1{font-size:clamp(42px,6.3vw,62px)}}
+@media(max-width:740px){.wrap{width:calc(100% - 36px)}.header-row{height:62px}.header-row nav{display:none}.hero-grid{grid-template-columns:1fr;padding-block:34px;gap:26px}.hero-copy h1{font-size:clamp(45px,9vw,65px);margin:14px 0 15px}.hero-actions{margin-top:20px}.hero-note{margin-top:14px}.how-section,.roles-section{padding-block:43px}.steps{gap:10px}.step,.role-card{padding:16px}.home h2{margin-bottom:16px}}
+@media(max-width:515px){.steps,.roles{grid-template-columns:1fr}.home-cta{align-items:flex-start;flex-direction:column;padding:16px}.footer-row{flex-wrap:wrap;padding-block:14px}.footer-row p{order:3;flex-basis:100%}.staff-link{font-size:12px;padding-inline:10px;min-height:37px}}
+.role-error{margin-bottom:14px}
+.keep-together{white-space:nowrap}
+.role-card{display:flex;align-items:flex-start;flex-direction:column}
+.role-card p{flex:1}
+.role-card .btn-outline{border-color:#8db9a6;color:var(--green-deep)}
+.care-stage{background:var(--green-dark);color:var(--mint);border:1px solid var(--green-deep);border-radius:var(--radius-large);padding:var(--space-6);box-shadow:0 28px 60px #092f2518;overflow:hidden}
+.care-stage-top{display:flex;justify-content:space-between;gap:var(--space-4);font-size:10px;letter-spacing:.14em;font-weight:700;color:var(--mint-strong)}
+.care-orbit{position:relative;min-height:340px;display:grid;place-items:center;margin:var(--space-4) 0}
+.orbit-ring{position:absolute;width:290px;height:290px;border:1px solid #b6e2cb30;border-radius:50%;transform:rotate(-24deg) scaleX(1.2)}
+.orbit-ring.inner{width:205px;height:205px;transform:rotate(24deg) scaleX(1.2);border-style:dashed}
+.orbit-center{position:relative;text-align:center;display:grid;justify-items:center;gap:var(--space-2)}
+.orbit-center>mm-icon{font-size:36px;color:var(--mint-strong);margin-bottom:var(--space-2)}
+.orbit-center strong{font:400 clamp(24px,3vw,35px)/1.15 Georgia,serif;letter-spacing:-.04em;color:white}
+.orbit-center small{font-size:13px;color:var(--mint-strong)}
+.orbit-label{position:absolute;display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3);background:var(--green-deep);border:1px solid #b6e2cb40;border-radius:var(--radius-small);font-size:12px;font-weight:650;color:var(--mint);box-shadow:0 8px 24px #0002}
+.orbit-label.patient{top:12px;left:18%}.orbit-label.doctor{right:0;top:49%}.orbit-label.admin{left:0;bottom:18px}
+.care-stage-bottom{display:flex;gap:var(--space-3);align-items:center;border-top:1px solid #b6e2cb30;padding-top:var(--space-4)}
+.care-stage-bottom p{color:var(--mint-strong);font-size:12px;flex:1}.care-stage-bottom strong{color:var(--mint);font-weight:500}.care-stage-bottom>span:last-child{font-size:9px;letter-spacing:.12em;color:var(--mint-strong)}
+.care-dot{width:8px;height:8px;border-radius:50%;background:var(--mint-strong)}
+@media(max-width:515px){.care-stage{padding:var(--space-4)}.care-orbit{min-height:310px}.orbit-ring{width:235px;height:235px}.orbit-ring.inner{width:175px;height:175px}.orbit-label{font-size:11px;padding:var(--space-2)}.orbit-label.doctor{top:61%}.orbit-label.admin{bottom:5px}}

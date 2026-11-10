@@ -1,0 +1,52 @@
+<header class="page-heading">
+  <div><div class="eyebrow">Patient care</div><h1>Patient directory</h1><p>Find patient records and see who may need follow-up.</p></div>
+  <a class="btn" routerLink="/doctor/patients/register"><mm-icon name="plus" /> Register patient</a>
+</header>
+
+<section class="card" aria-labelledby="patient-list">
+  <div class="list-head">
+    <div class="panel-heading">
+      <div><h2 id="patient-list">My patients</h2><p>{{ results().length }} of {{ data.patients().length }} patients shown · Last 7 days</p></div>
+    </div>
+    <div class="list-filters">
+      <label class="field">Search patients
+        <input #search type="search" placeholder="Name, email, phone, or ID" [value]="query()" (input)="query.set(search.value)" />
+      </label>
+      <label class="field">Adherence status
+        <select #statusSelect [value]="filter()" (change)="filter.set(statusSelect.value)">
+          @for (option of filters; track option) { <option [value]="option">{{ option }}</option> }
+        </select>
+      </label>
+    </div>
+  </div>
+  @if (results().length) {
+    <table class="responsive-table">
+      <thead><tr><th scope="col">Patient</th><th scope="col">Phone</th><th scope="col">Adherence</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Open patient</span></th></tr></thead>
+      <tbody>
+        @for (row of results(); track row.patient.id; let index = $index) {
+          <tr>
+            <td>
+              <a class="patient-identity" [routerLink]="['/doctor/patients', row.patient.id]">
+                <span class="avatar" [class.alt]="index % 3 === 1" [class.violet]="index % 3 === 2" aria-hidden="true">{{ initials(row.patient.name) }}</span>
+                <span><strong>{{ row.patient.name }}</strong><small>{{ row.patient.email }}</small></span>
+              </a>
+            </td>
+            <td data-label="Phone">{{ row.patient.phone || '—' }}</td>
+            <td data-label="Adherence"><strong>{{ row.rate === null ? '—' : row.rate + '%' }}</strong></td>
+            <td data-label="Status"><span class="badge" [class]="row.status.tone">{{ row.status.label }}</span></td>
+            <td class="row-action"><a class="text-link" [routerLink]="['/doctor/patients', row.patient.id]" [attr.aria-label]="'Open record for ' + row.patient.name">View record <mm-icon name="chevron" /></a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <div class="empty-state">
+      <h3>{{ data.patients().length ? 'No matching patients' : 'No patients registered' }}</h3>
+      @if (data.patients().length) {
+        <p>Try a different search or adherence status.</p><button class="btn btn-secondary" type="button" (click)="resetFilters()">Clear filters</button>
+      } @else {
+        <p>Register a patient to create their record and mobile access code.</p><a class="btn" routerLink="/doctor/patients/register">Register patient</a>
+      }
+    </div>
+  }
+</section>

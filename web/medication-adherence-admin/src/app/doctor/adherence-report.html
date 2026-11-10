@@ -1,0 +1,53 @@
+<header class="page-heading">
+  <div><div class="eyebrow">Patient care</div><h1>Adherence report</h1><p>Review recorded dose outcomes for a patient and period.</p></div>
+  @if (patient(); as selected) { <a class="btn btn-secondary" [routerLink]="['/doctor/patients', selected.id]">View patient record <mm-icon name="arrow" /></a> }
+</header>
+
+@if (patient(); as selected) {
+  <section class="card card-pad report-filters" aria-label="Report filters">
+    <div class="list-filters">
+      <label class="field">Patient
+        <select #patientSelect [value]="selected.id" (change)="changePatient(patientSelect.value)">
+          @for (patient of data.patients(); track patient.id) { <option [value]="patient.id" [selected]="patient.id === selected.id">{{ patient.name }}</option> }
+        </select>
+      </label>
+      <label class="field">Period
+        <select #periodSelect [value]="period()" (change)="changePeriod(periodSelect.value)">
+          @for (days of periods; track days) { <option [value]="days">Last {{ days }} days</option> }
+        </select>
+      </label>
+    </div>
+  </section>
+
+  @if (report(); as summary) {
+    @if (summary.due) {
+      <div class="report-stats" aria-label="Dose outcomes">
+        <article class="card card-pad"><span class="badge badge-green">Taken</span><strong>{{ summary.taken }}</strong><p>Out of {{ summary.due }} doses due</p></article>
+        <article class="card card-pad"><span class="badge badge-amber">Skipped</span><strong>{{ summary.skipped }}</strong><p>Marked skipped by the patient</p></article>
+        <article class="card card-pad"><span class="badge badge-red">Missed</span><strong>{{ summary.missed }}</strong><p>Due without a recorded response</p></article>
+      </div>
+      <section class="card card-pad report-chart" aria-labelledby="chart-title">
+        <div class="panel-heading"><div><h2 id="chart-title">Adherence trend</h2><p>Percentage of doses due that were taken on each day.</p></div><span class="badge badge-green">{{ summary.rate }}% adherence</span></div>
+        <mm-chart [days]="summary.days" />
+      </section>
+      <section class="card" aria-labelledby="breakdown-title">
+        <div class="list-head"><div class="panel-heading"><div><h2 id="breakdown-title">By medication</h2><p>Recorded outcomes for {{ selected.name }} over the last {{ period() }} days.</p></div></div></div>
+        <table class="responsive-table report-table">
+          <thead><tr><th scope="col">Medication</th><th scope="col">Taken</th><th scope="col">Skipped</th><th scope="col">Missed</th><th scope="col">Due</th><th scope="col">Adherence</th></tr></thead>
+          <tbody>
+            @for (medication of summary.medications; track $index) {
+              <tr><td><strong>{{ medication.name }}</strong></td><td data-label="Taken">{{ medication.taken }}</td><td data-label="Skipped">{{ medication.skipped }}</td><td data-label="Missed">{{ medication.missed }}</td><td data-label="Due">{{ medication.due }}</td><td data-label="Adherence"><span class="badge badge-green">{{ medication.rate }}%</span></td></tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    } @else {
+      <section class="card empty-state report-empty">
+        <span class="metric-icon"><mm-icon name="calendar" /></span><h2>No doses due</h2>
+        <p>{{ selected.name }} has no doses due in the last {{ period() }} days. Try another period or patient.</p>
+      </section>
+    }
+  }
+} @else {
+  <section class="card empty-state"><h2>No patient reports yet</h2><p>Patient reports become available after doses are recorded.</p><a class="btn" routerLink="/doctor/patients">Open patient directory</a></section>
+}

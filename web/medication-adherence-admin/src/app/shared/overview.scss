@@ -1,0 +1,28 @@
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:20px}
+.metric{padding:17px 17px 16px;display:flex;flex-direction:column;align-items:flex-start}
+.metric-icon{display:inline-grid;place-items:center;flex:none;width:37px;height:37px;border-radius:10px;background:#e6f3eb;color:var(--green);font-size:17px}
+.metric-icon.warn{background:#fff2df;color:var(--amber)}
+.metric-label{font-weight:700;margin-top:10px;font-size:13px;color:#405a4e}
+.metric>strong{font-size:32px;line-height:1.15;letter-spacing:-.065em;margin:2px 0 4px;font-variant-numeric:tabular-nums}
+.metric>small{font-size:11px}
+.overview-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:18px;align-items:stretch}
+.overview-chart .chart{--plot-height:152px}
+.period{display:inline-flex;gap:6px;align-items:center;white-space:nowrap;font-weight:700;color:var(--muted-strong);border:1px solid var(--line);border-radius:7px;padding:6px 8px;font-size:11px}
+.dose-legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
+.dose-legend>div{display:grid;gap:2px;border-radius:8px;background:var(--soft);padding:8px 10px}
+.dose-legend span{display:flex;gap:5px;align-items:center;color:var(--muted);font-size:11px}
+.dose-legend strong{font-size:20px;letter-spacing:-.045em}
+.dose-legend i{width:6px;height:6px;border-radius:50%;background:#329475}.dose-legend>div:nth-child(2) i{background:#b97a36}.dose-legend>div:nth-child(3) i{background:#bc5c58}
+.overview-side{display:flex;flex-direction:column}
+.follow-list{margin-bottom:10px}
+.follow-row{display:flex;align-items:center;gap:9px;border-block-start:1px solid var(--line);padding:12px 0;color:var(--ink)}
+.follow-row:hover{color:var(--green)}
+.follow-row>div{flex:1;min-width:0}.follow-row small,.shortcut-grid small{display:block;font-size:11px}
+.side-link{margin-top:auto;padding-top:8px}
+.overview-shortcuts{margin-top:18px}
+.shortcut-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.shortcut-grid a{border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;gap:9px;padding:10px;color:var(--ink)}
+.shortcut-grid a:hover{background:var(--soft);border-color:#a4cdb8}
+.shortcut-grid a>span:nth-child(2){flex:1}
+@media(max-width:1050px){.overview-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:690px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{padding:13px}.metric>strong{font-size:28px}.shortcut-grid{grid-template-columns:1fr}.overview-grid{gap:12px}.overview-shortcuts{margin-top:12px}}

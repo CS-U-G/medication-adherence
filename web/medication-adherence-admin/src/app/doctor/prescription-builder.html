@@ -1,0 +1,96 @@
+<a class="text-link back-link" routerLink="/doctor/prescriptions"><mm-icon name="arrow" /> Prescriptions</a>
+<header class="page-heading">
+  <div><div class="eyebrow">Patient care</div><h1>New prescription</h1><p>Choose a patient and add one or more medications to their care plan.</p></div>
+</header>
+
+@if (data.patients().length && medications().length) {
+  <div class="detail-layout">
+    <form class="card card-pad form-section" [formGroup]="form" (ngSubmit)="openReview(reviewDialog)" novalidate>
+      <div class="panel-heading"><div><h2>Prescription details</h2><p>Review these instructions before issuing them to the patient.</p></div></div>
+      <label class="field">Patient
+        <select formControlName="patientId" required [attr.aria-invalid]="form.controls.patientId.touched && form.controls.patientId.invalid || null">
+          <option value="">Select a patient</option>
+          @for (patient of data.patients(); track patient.id) { <option [value]="patient.id">{{ patient.name }}</option> }
+        </select>
+        @if (form.controls.patientId.touched && form.controls.patientId.invalid) { <small class="field-error">Choose a patient.</small> }
+      </label>
+      <div formArrayName="items" class="builder-items">
+        @for (item of items.controls; track item; let index = $index) {
+          <fieldset class="builder-item form-grid" [formGroupName]="index">
+            <legend>Medication {{ index + 1 }}</legend>
+            @if (items.length > 1) {
+              <button class="btn btn-ghost item-remove" type="button" (click)="removeItem(index)" [attr.aria-label]="'Remove medication ' + (index + 1)">Remove</button>
+            }
+            <label class="field">Medication
+              <select formControlName="medicationId" required [attr.aria-invalid]="item.controls.medicationId.touched && item.controls.medicationId.invalid || null">
+                <option value="">Select a medication</option>
+                @for (medication of medications(); track medication.id) { <option [value]="medication.id">{{ medicationLabel(medication.id) }}</option> }
+              </select>
+              @if (item.controls.medicationId.touched && item.controls.medicationId.invalid) { <small class="field-error">Choose a medication.</small> }
+            </label>
+            <label class="field">Dose
+              <input formControlName="dose" placeholder="Enter prescribed dose" required
+                [attr.aria-invalid]="item.controls.dose.touched && item.controls.dose.invalid || null" />
+              @if (item.controls.dose.touched && item.controls.dose.invalid) { <small class="field-error">Enter a dose (up to 100 characters).</small> }
+            </label>
+            <label class="field">Frequency
+              <select formControlName="frequency" required [attr.aria-invalid]="item.controls.frequency.touched && item.controls.frequency.invalid || null">
+                <option value="">Select frequency</option>
+                @for (frequency of frequencies; track frequency) { <option>{{ frequency }}</option> }
+              </select>
+              @if (item.controls.frequency.touched && item.controls.frequency.invalid) { <small class="field-error">Choose a frequency.</small> }
+            </label>
+            <label class="field">Duration (days)
+              <input type="number" formControlName="duration" min="1" step="1" placeholder="Days" required
+                [attr.aria-invalid]="item.controls.duration.touched && item.controls.duration.invalid || null" />
+              @if (item.controls.duration.touched && item.controls.duration.invalid) { <small class="field-error">Enter a positive whole number of days.</small> }
+            </label>
+          </fieldset>
+        }
+        <button type="button" class="btn btn-secondary add-item" (click)="addItem()"><mm-icon name="plus" /> Add medication</button>
+      </div>
+      <label class="field">Notes <span class="sr-only">(optional)</span>
+        <textarea formControlName="notes" maxlength="500" placeholder="Additional instructions (optional)"></textarea>
+      </label>
+      @if (error()) { <p role="alert" class="notice error">{{ error() }}</p> }
+      <div class="form-actions end-actions">
+        <a class="btn btn-secondary" routerLink="/doctor/prescriptions">Cancel</a>
+        <button class="btn" type="submit">Review prescription <mm-icon name="arrow" /></button>
+      </div>
+    </form>
+    <aside class="card card-pad help-card">
+      <span class="metric-icon"><mm-icon name="calendar" /></span>
+      <h2>Reminder times</h2>
+      <p>Set the dose, frequency, and duration here. The patient chooses exact reminder times in the mobile app.</p>
+    </aside>
+  </div>
+} @else if (!data.patients().length) {
+  <section class="card empty-state">
+    <h2>No patients registered</h2><p>Register a patient before issuing a prescription.</p>
+    <a class="btn" routerLink="/doctor/patients/register">Register patient</a>
+  </section>
+} @else {
+  <section class="card empty-state">
+    <h2>No medications available</h2><p>Ask an administrator to add a catalogue medication before issuing a prescription.</p>
+    <a class="btn btn-secondary" routerLink="/doctor/prescriptions">Return to prescriptions</a>
+  </section>
+}
+
+<dialog #reviewDialog aria-labelledby="prescription-review-title">
+  <span class="metric-icon dialog-icon"><mm-icon name="file" /></span>
+  <h2 id="prescription-review-title">Review prescription</h2>
+  @if (review(); as draft) {
+    <p>Check the medication instructions for <strong>{{ patientName(draft.patientId) }}</strong>.</p>
+    <ul class="review-medications">
+      @for (item of draft.items; track $index) {
+        <li><strong>{{ medicationLabel(item.medicationId) }}</strong><small>{{ item.dose }} · {{ item.frequency }} · {{ item.duration }} {{ item.duration === 1 ? 'day' : 'days' }}</small></li>
+      }
+    </ul>
+    @if (draft.notes) { <p class="multiline"><strong>Notes:</strong> {{ draft.notes }}</p> }
+    @if (error()) { <p role="alert" class="notice error">{{ error() }}</p> }
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" (click)="reviewDialog.close()">Back to editing</button>
+      <button class="btn" type="button" (click)="issue(reviewDialog)">Issue prescription</button>
+    </div>
+  }
+</dialog>
