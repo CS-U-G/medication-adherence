@@ -4,13 +4,13 @@ services:
     name: medminder-web
     runtime: static
     rootDir: web/medication-adherence-admin
-    buildCommand: npm ci && npm run configure && npm run build
+    buildCommand: npm ci --include=dev && npm run build -- --configuration production
     staticPublishPath: dist/medication-adherence-admin/browser
     envVars:
       - key: NODE_VERSION
         value: 24.15.0
-      - key: MEDMINDER_API_URL
-        sync: false
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
     routes:
       - type: rewrite
         source: /*

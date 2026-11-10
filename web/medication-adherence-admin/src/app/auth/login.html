@@ -15,9 +15,9 @@
     <section class="login-form card">
       <div class="login-top"><span class="metric-icon"><mm-icon name="lock"/></span>@if (auth.mode()==='demo') {<span class="badge badge-demo">Demo mode</span>}</div>
       <h1>Staff sign in</h1>
-      <p>{{auth.mode()==='demo' ? 'Explore a workspace with fictional records.' : 'Verify your staff credentials with the MedMinder API.'}}</p>
+      <p>{{auth.mode()==='demo' ? 'Explore a workspace with fictional records.' : 'Submit your staff credentials to the MedMinder API for verification.'}}</p>
       @if(auth.mode()==='live') {
-        <div class="notice access-notice"><strong>Staff workspace access is pending.</strong><p>Credential verification is connected, but this release cannot establish a protected staff session. Contact your administrator before entering credentials.</p><a class="text-link" routerLink="/availability">View service availability <mm-icon name="arrow"/></a></div>
+        <div class="notice access-notice"><strong>Staff workspace access is unavailable.</strong><p>Submitting this form cannot open a workspace until the server can start a secure staff session.</p><a class="text-link" routerLink="/availability">View service availability <mm-icon name="arrow"/></a></div>
       }
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="busy()">
         <label class="field" for="staff-email">Email address
@@ -35,7 +35,9 @@
           <div class="demo-buttons"><button type="button" class="btn btn-outline" [disabled]="busy()" (click)="demo('doctor')"><mm-icon name="stethoscope"/> Enter Doctor Demo</button><button type="button" class="btn btn-outline" [disabled]="busy()" (click)="demo('admin')"><mm-icon name="shield"/> Enter Admin Demo</button></div>
         </div>
       }
-      <div class="login-access"><mm-icon name="info"/><p><strong>New to MedMinder?</strong> <a class="text-link" routerLink="/register">Create a doctor account</a>. Administrator accounts are provisioned in the database. Patients use the mobile app.</p></div>
+      @if (auth.mode()==='live') {
+        <div class="login-access"><mm-icon name="info"/><p><strong>New to MedMinder?</strong> <a class="text-link" routerLink="/register">Create a doctor account</a>. Patients use the mobile app.</p></div>
+      }
     </section>
   </main>
   <footer class="login-footer">MedMinder · Medication Adherence Project</footer>

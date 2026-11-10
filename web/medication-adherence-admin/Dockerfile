@@ -2,15 +2,11 @@ FROM node:24-bookworm-slim AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --include=dev
 
 COPY angular.json tsconfig.json tsconfig.app.json ./
 COPY public/ ./public/
 COPY src/ ./src/
-COPY scripts/ ./scripts/
-ARG MEDMINDER_API_URL=""
-ENV MEDMINDER_API_URL=${MEDMINDER_API_URL}
-RUN npm run configure
 RUN npm run build -- --configuration production \
     && test -f dist/medication-adherence-admin/browser/index.html
 

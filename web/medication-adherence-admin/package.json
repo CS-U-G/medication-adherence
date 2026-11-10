@@ -5,7 +5,6 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "configure": "node scripts/configure.mjs",
     "test": "ng test --watch=false",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "watch": "ng build --watch --configuration development"

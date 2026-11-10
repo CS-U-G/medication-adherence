@@ -49,7 +49,7 @@
             @else {<a routerLink="/register" class="btn">Create doctor account <mm-icon name="arrow"/></a>}
           </article>
           <article class="role-card">
-            <span class="step-icon"><mm-icon name="shield"/></span><h3>Administrator workspace</h3><p>Designed around doctor accounts and staff access. Live account management requires server authorization; the medication catalogue is not yet available.</p>
+            <span class="step-icon"><mm-icon name="shield"/></span><h3>Administrator workspace</h3><p>Designed around doctor accounts and the medication catalogue. Live management requires server authorization.</p>
             @if (auth.mode() === 'demo') {<button type="button" class="btn btn-outline" (click)="demo('admin')">Enter Admin Demo <mm-icon name="arrow"/></button>}
             @else {<a routerLink="/login" class="btn btn-outline">Staff sign in <mm-icon name="arrow"/></a>}
           </article>

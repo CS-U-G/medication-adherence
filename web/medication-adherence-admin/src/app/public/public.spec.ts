@@ -5,6 +5,8 @@ import { provideRouter } from '@angular/router';
 import { Home } from './home';
 import { ServiceStatus } from './service-status';
 
+const healthUrl = 'https://medication-adherence.onrender.com/health';
+
 describe('public production experience', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])] }));
   afterEach(() => { TestBed.inject(HttpTestingController).verify(); TestBed.resetTestingModule(); });
@@ -28,18 +30,32 @@ describe('public production experience', () => {
     button.click();
     fixture.detectChanges();
     expect(button.disabled).toBe(true);
-    TestBed.inject(HttpTestingController).expectOne('/health').error(new ProgressEvent('error'));
+    TestBed.inject(HttpTestingController).expectOne(healthUrl).error(new ProgressEvent('error'));
     await vi.waitFor(() => {
       fixture.detectChanges();
       expect(host.textContent).toContain('could not be verified');
     });
     expect(button.disabled).toBe(false);
     button.click();
-    TestBed.inject(HttpTestingController).expectOne('/health').flush({ status: 'healthy' });
+    TestBed.inject(HttpTestingController).expectOne(healthUrl).flush({ status: 'healthy' });
     await vi.waitFor(() => {
       fixture.detectChanges();
       expect(host.textContent).toContain('reachable and reports healthy');
     });
     expect(host.textContent).toContain('authorization is still pending');
+  });
+  it('distinguishes an unavailable API from a browser connection failure', async () => {
+    const fixture = TestBed.createComponent(ServiceStatus);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const button = host.querySelector('button')!;
+    button.click();
+    TestBed.inject(HttpTestingController).expectOne(healthUrl)
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(host.textContent).toContain('temporarily unavailable (HTTP 503)');
+    });
+    expect(button.disabled).toBe(false);
   });
 });

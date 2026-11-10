@@ -4,21 +4,27 @@
     <aside class="register-story">
       <div class="eyebrow">For doctors</div>
       <h1>Your practice.<br>Your patients.<br><em>Your workspace.</em></h1>
-      <p>Create your MedMinder doctor account with your personal and professional details.</p>
-      <div class="story-detail"><mm-icon name="stethoscope"/><div><strong>A dedicated doctor account</strong><p>Registration creates a Doctor role. Administrator accounts are provisioned directly in the database.</p></div></div>
+      @if (live) {
+        <p>Create your MedMinder doctor account with your personal and professional details.</p>
+        <div class="story-detail"><mm-icon name="stethoscope"/><div><strong>A dedicated doctor account</strong><p>Registration creates a doctor account. Contact your administrator for help with staff access.</p></div></div>
+      }
       <a class="text-link" routerLink="/availability">View service availability <mm-icon name="arrow"/></a>
     </aside>
     <section class="card register-form" aria-labelledby="register-title">
-      @if(success()) {
+      @if (!live) {
+        <h2 id="register-title">Live registration is unavailable in demo mode</h2>
+        <p>Use the demo sign-in page to explore a workspace with fictional records.</p>
+        <a class="btn" routerLink="/login">Back to demo sign in <mm-icon name="arrow"/></a>
+      } @else if(success()) {
         <div class="registration-success" role="status" tabindex="-1">
           <span class="success-icon"><mm-icon name="check"/></span>
           <h2 id="register-title">Your doctor account is ready</h2>
-          <p>The server confirmed your account was created. You can now return to staff sign in.</p>
-          <p class="notice">Workspace access still depends on the server’s staff session support. Creating an account does not sign you in.</p>
-          <a class="btn" routerLink="/login">Continue to sign in <mm-icon name="arrow"/></a>
+          <p>The server confirmed your account was created. Workspace access is currently unavailable.</p>
+          <a class="btn" routerLink="/availability">View service availability <mm-icon name="arrow"/></a>
         </div>
       } @else {
         <div class="form-intro"><span class="badge badge-green">Doctor registration</span><h2 id="register-title">Create your account</h2><p>Already registered? <a class="text-link" routerLink="/login">Sign in</a></p></div>
+        <p class="notice">This form creates a real doctor account. Workspace access is currently unavailable.</p>
         <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="busy()">
           <p class="required-note">All fields are required unless marked optional.</p>
           @for(section of sections; track section.title; let sectionIndex = $index) {
