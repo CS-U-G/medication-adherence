@@ -36,6 +36,10 @@ namespace MedicationAdherence.BLL.DependencyInjection
 
             services.AddScoped<IPrescriptionService, PrescriptionService>();
 
+            services.AddScoped<IDoseRepository, DoseRepository>();
+
+            services.AddScoped<IDoseService, DoseService>();
+
             return services;
         }
     }
