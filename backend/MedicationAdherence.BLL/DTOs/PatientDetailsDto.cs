@@ -19,5 +19,6 @@ namespace MedicationAdherence.BLL.DTOs
         public string? PrimaryDoctorName { get; set; }
         public string? MedicalNotes { get; set; }
         public bool IsActive { get; set; }
+        public string? Token { get; set; }
     }
 }

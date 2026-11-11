@@ -1,4 +1,5 @@
 ﻿using MedicationAdherence.BLL.DTOs;
+using MedicationAdherence.BLL.Helpers;
 using MedicationAdherence.BLL.Interfaces;
 using MedicationAdherence.DAL.Enums;
 using MedicationAdherence.DAL.Interfaces;
@@ -15,11 +16,13 @@ namespace MedicationAdherence.BLL.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher)
+        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher, IJwtTokenGenerator jwtTokenGenerator)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         public async Task<AuthResponseDto?> LoginWebUserAsync(WebLoginRequestDto dto)
@@ -38,13 +41,16 @@ namespace MedicationAdherence.BLL.Services
             if (user.IsActive == false)
                 return null;
 
+            string token = _jwtTokenGenerator.GenerateToken(user.UserId, user.Person.FullName, user.Role.ToString());
+
             return new AuthResponseDto
             {
                 UserId = user.UserId,
                 DoctorId = user.Doctor?.DoctorId, 
                 FullName = user.Person.FullName,
                 Email = user.Email,
-                Role = user.Role,    
+                Role = user.Role,
+                Token = token,
                 Message = "Login successful"
             };
         }

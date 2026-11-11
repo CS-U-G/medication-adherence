@@ -2,11 +2,13 @@
 using MedicationAdherence.BLL.DTOs;
 using MedicationAdherence.BLL.Interfaces;
 using MedicationAdherence.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicationAdherence.Api.Controllers
 {
+    [Authorize]
     [Route("api/Medications")]
     [ApiController]
     public class MedicationsController : ControllerBase
@@ -18,6 +20,7 @@ namespace MedicationAdherence.Api.Controllers
             _medicationService = medicationService;
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPost("AddNew")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -42,6 +45,7 @@ namespace MedicationAdherence.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet("All")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllMedications()
@@ -51,6 +55,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(medications);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("active")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetActiveMedications()
@@ -59,6 +64,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(medications);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet("Medication/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -77,6 +83,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(medication);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("Medication/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -98,6 +105,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(new { message = "Successfully updated." });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

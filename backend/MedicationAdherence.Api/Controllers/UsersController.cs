@@ -1,11 +1,13 @@
 ﻿using MedicationAdherence.Api.Validators;
 using MedicationAdherence.BLL.DTOs;
 using MedicationAdherence.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicationAdherence.Api.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -21,7 +23,6 @@ namespace MedicationAdherence.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
         public async Task<IActionResult> GetUserById(int id)
         {
             if(!ValidationHelper.IsValidId(id))

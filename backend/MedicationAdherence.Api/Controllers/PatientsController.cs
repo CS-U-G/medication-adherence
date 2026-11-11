@@ -2,11 +2,13 @@
 using MedicationAdherence.BLL.DTOs;
 using MedicationAdherence.BLL.Interfaces;
 using MedicationAdherence.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicationAdherence.Api.Controllers
 {
+    [Authorize]
     [Route("api/patients")]
     [ApiController]
     public class PatientsController : ControllerBase
@@ -18,6 +20,7 @@ namespace MedicationAdherence.Api.Controllers
             _patientService = patientService;
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPost("register-by-doctor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -39,6 +42,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpPost("code-login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -59,6 +63,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(patient);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet("{patientId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -79,6 +84,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(patient);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet("doctor/{doctorId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPatientsByDoctor(int doctorId)
@@ -93,6 +99,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(patients);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{patientId}/regenerate-code")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -112,7 +119,8 @@ namespace MedicationAdherence.Api.Controllers
 
             return Ok(new { patientId = patientId, newAccessCode = newCode, message = "A new access code has been successfully generated." });
         }
-
+        
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{patientId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -133,6 +141,7 @@ namespace MedicationAdherence.Api.Controllers
             return Ok(new { message = "The patient's information has been successfully updated." });
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{patientId}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

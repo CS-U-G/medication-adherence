@@ -5,6 +5,7 @@ using MedicationAdherence.DAL.Interfaces;
  using MedicationAdherence.DAL.Repositories;
 using MedicationAdherence.BLL.Interfaces;
 using MedicationAdherence.BLL.Services;
+using MedicationAdherence.BLL.Helpers;
 
 namespace MedicationAdherence.BLL.DependencyInjection
 {
@@ -12,6 +13,8 @@ namespace MedicationAdherence.BLL.DependencyInjection
     {
         public static IServiceCollection AddDependencyInjections(this IServiceCollection services, string connectionString)
         {
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
