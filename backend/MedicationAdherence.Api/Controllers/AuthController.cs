@@ -38,8 +38,16 @@ namespace MedicationAdherence.Api.Controllers
         [HttpPost("SignIn")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SignIn([FromBody] SignInDoctorDto dto)
         {
+            if (!ValidationHelper.IsStrongPassword(dto.Password))
+            {
+                return BadRequest(new {message = @"The password must be at least 8 characters long. 
+                                                    Or this password is weak! It must be at least 8 characters long and contain letters, numbers,
+                                                    and special characters (such as @#$%)." });
+            }
+
             var result = await _authService.SignInWebUserAsync(dto);
 
             if (result == null)
