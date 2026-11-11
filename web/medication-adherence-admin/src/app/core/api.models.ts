@@ -17,5 +17,6 @@ export interface WebLoginResponse {
   email: string;
   role: 'Admin' | 'Doctor';
   message: string;
+  token?: string;
 }
 export interface HealthResponse { status: 'healthy'; }

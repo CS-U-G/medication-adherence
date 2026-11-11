@@ -10,11 +10,11 @@ import { DoctorOverview } from './doctor-overview';
 it('loads the signed-in doctor’s roster and active prescription count from the API', async () => {
   const session = signal<Session>({
     id: '31', name: 'Test Doctor', email: 'doctor@example.test', role: 'doctor', mode: 'live',
-    signedInAt: '2026-11-10T12:00:00Z',
+    signedInAt: '2026-11-10T12:00:00Z', token: 'live-token', expiresAt: Date.now() + 60_000,
   });
   TestBed.configureTestingModule({
     providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(),
-      { provide: AuthService, useValue: { mode: () => 'live', session } }],
+      { provide: AuthService, useValue: { mode: () => 'live', session, expireIfNeeded: () => false } }],
   });
   const http = TestBed.inject(HttpTestingController);
   try {

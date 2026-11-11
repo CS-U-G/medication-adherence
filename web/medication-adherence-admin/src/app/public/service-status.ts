@@ -15,7 +15,7 @@ import { Icon } from '../shared/icon';
     <main id="main" class="status-main">
       <div class="eyebrow">Platform availability</div>
       <h1>A clear view of what’s ready.</h1>
-      <p class="intro">Check the connection and review the availability of staff services before signing in.</p>
+      <p class="intro">Check the service connection and review which staff tools are available.</p>
       <section class="card card-pad connection" aria-labelledby="connection-title" [attr.aria-busy]="busy()">
         <div><span class="metric-icon"><mm-icon name="activity"/></span><h2 id="connection-title">Live API connection</h2></div>
         <p role="status" aria-live="polite">{{message()}}</p>
@@ -32,8 +32,8 @@ import { Icon } from '../shared/icon';
             <p>Live account creation is disabled in this demo.</p>
           }
         </div></article>
-        <article><span class="step-no">01</span><div><h3>Staff sign in</h3><p>Workspace access needs a secure session from the server. That support is currently unavailable.</p></div><span class="badge badge-amber">Pending authorization</span></article>
-        <article><span class="step-no">02</span><div><h3>Patients, doctor accounts, medications and prescriptions</h3><p>Live workspace access requires a secure session and staff permissions.</p></div><span class="badge badge-amber">Pending authorization</span></article>
+        <article><span class="step-no">01</span><div><h3>Staff sign in</h3><p>Doctors and administrators use one sign-in and continue to the workspace for their account.</p></div><span class="badge badge-green">Available</span></article>
+        <article><span class="step-no">02</span><div><h3>Patients, doctor accounts, medications and prescriptions</h3><p>These tools are available to authenticated staff with the required permissions.</p></div><span class="badge badge-green">Staff access</span></article>
         <article><span class="step-no">03</span><div><h3>Adherence reports</h3><p>The API does not provide live dose outcomes yet.</p></div><span class="badge">Not available</span></article>
       </section>
       <div class="status-footer"><p>Your administrator can help with access and service availability.</p><a class="btn btn-outline" routerLink="/login">Staff sign in</a></div>
@@ -53,7 +53,7 @@ export class ServiceStatus {
     this.message.set('Contacting the API…');
     try {
       await this.api.health();
-      this.message.set('The API is reachable and reports healthy. Staff authorization is still pending.');
+      this.message.set('The API is reachable and reports healthy. Authorized staff can sign in to their workspace.');
     } catch (failure: unknown) {
       if (failure instanceof TimeoutError) {
         this.message.set('The API did not respond in time. Wait a moment and check again.');

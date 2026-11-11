@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom, timeout } from 'rxjs';
 import { MEDMINDER_API_ORIGIN } from './app-mode';
@@ -36,11 +36,22 @@ export class StaffHttp {
     if (this.auth.mode() !== 'live' || session?.mode !== 'live') {
       throw new Error('Sign in with a live staff session to continue.');
     }
+    if (this.auth.expireIfNeeded()) throw new Error('Your staff session has expired. Please sign in again.');
+    if (!session.token) throw new Error('Your staff session is missing its security token. Please sign in again.');
 
-    // The staff session integration will attach credentials at the HTTP boundary.
-    const response = await firstValueFrom(
-      this.http.request<T>(method, `${MEDMINDER_API_ORIGIN}${path}`, { body, params }).pipe(timeout(75_000)),
-    );
+    let response: T;
+    try {
+      response = await firstValueFrom(
+        this.http.request<T>(method, `${MEDMINDER_API_ORIGIN}${path}`, {
+          body, params, headers: new HttpHeaders({ Authorization: `Bearer ${session.token}` }),
+        }).pipe(timeout(75_000)),
+      );
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 401 && this.auth.session() === session) {
+        this.auth.expireSession();
+      }
+      throw error;
+    }
     if (this.auth.session() !== session) throw new Error('Your staff session changed. Please sign in again.');
     return response;
   }

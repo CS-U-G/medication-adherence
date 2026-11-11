@@ -6,7 +6,7 @@
       <h1>Your practice.<br>Your patients.<br><em>Your workspace.</em></h1>
       @if (live) {
         <p>Create your MedMinder doctor account with your personal and professional details.</p>
-        <div class="story-detail"><mm-icon name="stethoscope"/><div><strong>A dedicated doctor account</strong><p>Registration creates a doctor account. Contact your administrator for help with staff access.</p></div></div>
+        <div class="story-detail"><mm-icon name="stethoscope"/><div><strong>A dedicated doctor account</strong><p>After registration, use the shared staff sign-in to open your doctor workspace.</p></div></div>
       }
       <a class="text-link" routerLink="/availability">View service availability <mm-icon name="arrow"/></a>
     </aside>
@@ -19,12 +19,12 @@
         <div class="registration-success" role="status" tabindex="-1">
           <span class="success-icon"><mm-icon name="check"/></span>
           <h2 id="register-title">Your doctor account is ready</h2>
-          <p>The server confirmed your account was created. Workspace access is currently unavailable.</p>
-          <a class="btn" routerLink="/availability">View service availability <mm-icon name="arrow"/></a>
+          <p>Your account has been created. Sign in to open your doctor workspace.</p>
+          <a class="btn" routerLink="/login">Staff sign in <mm-icon name="arrow"/></a>
         </div>
       } @else {
         <div class="form-intro"><span class="badge badge-green">Doctor registration</span><h2 id="register-title">Create your account</h2><p>Already registered? <a class="text-link" routerLink="/login">Sign in</a></p></div>
-        <p class="notice">This form creates a real doctor account. Workspace access is currently unavailable.</p>
+        <p class="notice">This form creates a real doctor account. Afterward, use the shared staff sign-in to continue.</p>
         <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="busy()">
           <p class="required-note">All fields are required unless marked optional.</p>
           @for(section of sections; track section.title; let sectionIndex = $index) {

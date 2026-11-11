@@ -36,7 +36,7 @@ export class MedicationApi {
   }
 
   active(): Promise<MedicationRecord[]> {
-    return this.loadList('active');
+    return this.loadList('All').then(records => records.filter(record => record.isActive));
   }
 
   async get(id: number): Promise<MedicationRecord> {

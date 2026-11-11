@@ -10,11 +10,11 @@ describe('staff user API', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    const session = { mode: 'live', role: 'admin' };
+    const session = { mode: 'live', role: 'admin', token: 'live-token' };
     TestBed.configureTestingModule({ providers: [
       provideHttpClient(),
       provideHttpClientTesting(),
-      { provide: AuthService, useValue: { mode: () => 'live', session: () => session } },
+      { provide: AuthService, useValue: { mode: () => 'live', session: () => session, expireIfNeeded: () => false } },
     ] });
     api = TestBed.inject(UserApi);
     http = TestBed.inject(HttpTestingController);
@@ -24,6 +24,7 @@ describe('staff user API', () => {
   it('rejects an HTTP 200 freeze result when the user was not updated', async () => {
     const rejected = expect(api.setActive(31, false)).rejects.toThrow('could not be changed');
     const request = http.expectOne({ method: 'POST', url: `${MEDMINDER_API_ORIGIN}/api/users/freeze/31` });
+    expect(request.request.headers.get('Authorization')).toBe('Bearer live-token');
     request.flush(false);
     await rejected;
   });

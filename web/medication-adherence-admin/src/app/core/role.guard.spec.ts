@@ -14,8 +14,23 @@ describe('staff route guards', () => {
     expect(TestBed.inject(Router).serializeUrl(result as UrlTree)).toBe(`/login?returnUrl=%2F${role}%2Fsettings`);
   });
   it('denies a doctor access to administrator routes', () => {
-    TestBed.overrideProvider(AuthService, { useValue: { session: () => ({ role: 'doctor' }) } });
+    TestBed.overrideProvider(AuthService, { useValue: { session: () => ({ role: 'doctor' }), expireIfNeeded: () => false } });
     const result = TestBed.runInInjectionContext(() => roleGuard('admin')({} as ActivatedRouteSnapshot, { url: '/admin' } as RouterStateSnapshot));
     expect(TestBed.inject(Router).serializeUrl(result as UrlTree)).toBe('/forbidden');
+  });
+  it('allows an administrator into administrator routes', () => {
+    TestBed.overrideProvider(AuthService, { useValue: { session: () => ({ role: 'admin' }), expireIfNeeded: () => false } });
+    const result = TestBed.runInInjectionContext(() => roleGuard('admin')({} as ActivatedRouteSnapshot, { url: '/admin' } as RouterStateSnapshot));
+    expect(result).toBe(true);
+  });
+  it('denies an administrator access to doctor routes', () => {
+    TestBed.overrideProvider(AuthService, { useValue: { session: () => ({ role: 'admin' }), expireIfNeeded: () => false } });
+    const result = TestBed.runInInjectionContext(() => roleGuard('doctor')({} as ActivatedRouteSnapshot, { url: '/doctor' } as RouterStateSnapshot));
+    expect(TestBed.inject(Router).serializeUrl(result as UrlTree)).toBe('/forbidden');
+  });
+  it('redirects an expired staff session back to sign in', () => {
+    TestBed.overrideProvider(AuthService, { useValue: { session: () => null, expireIfNeeded: () => true } });
+    const result = TestBed.runInInjectionContext(() => roleGuard('admin')({} as ActivatedRouteSnapshot, { url: '/admin' } as RouterStateSnapshot));
+    expect(TestBed.inject(Router).serializeUrl(result as UrlTree)).toBe('/login?expired=1');
   });
 });

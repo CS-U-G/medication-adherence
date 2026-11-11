@@ -9,6 +9,7 @@ import { Session } from './models';
 const origin = 'https://medication-adherence.onrender.com';
 const liveSession: Session = {
   id: '5', role: 'admin', mode: 'live', name: 'Staff Test', email: 'staff@example.test', signedInAt: '2026-11-10T12:00:00Z',
+  token: 'live-token', expiresAt: Date.now() + 60_000,
 };
 const input = { tradeName: 'Sample brand', scientificName: 'Sample ingredient', dosageForm: 'Tablet', strength: null };
 const medication = { medicationId: 22, ...input, isActive: true, createdAt: '2026-11-10T12:00:00Z' };
@@ -22,7 +23,7 @@ describe('live medication API', () => {
     session.set(liveSession);
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting(),
-        { provide: AuthService, useValue: { mode: () => 'live', session } }],
+        { provide: AuthService, useValue: { mode: () => 'live', session, expireIfNeeded: () => false } }],
     });
     http = TestBed.inject(HttpTestingController);
     api = TestBed.inject(MedicationApi);
@@ -36,14 +37,17 @@ describe('live medication API', () => {
     http.expectNone(request => request.url.startsWith(origin));
   });
 
-  it('reads the full catalogue, active catalogue and individual record from distinct routes', async () => {
+  it('reads the full catalogue and filters active medications from the doctor-authorized route', async () => {
+    session.set({ ...liveSession, id: '31', role: 'doctor' });
     const all = api.list();
     const active = api.active();
     const one = api.get(22);
-    http.expectOne({ method: 'GET', url: `${origin}/api/Medications/All` }).flush([medication]);
-    http.expectOne({ method: 'GET', url: `${origin}/api/Medications/active` }).flush([]);
+    const catalogRequests = http.match({ method: 'GET', url: `${origin}/api/Medications/All` });
+    expect(catalogRequests).toHaveLength(2);
+    const inactive = { ...medication, medicationId: 23, isActive: false };
+    catalogRequests.forEach(request => request.flush([medication, inactive]));
     http.expectOne({ method: 'GET', url: `${origin}/api/Medications/Medication/22` }).flush(medication);
-    await expect(Promise.all([all, active, one])).resolves.toEqual([[medication], [], medication]);
+    await expect(Promise.all([all, active, one])).resolves.toEqual([[medication, inactive], [medication], medication]);
   });
 
   it('sends the catalogue write fields and uses a status PUT for deactivation', async () => {
