@@ -22,9 +22,10 @@ describe('live patient API', () => {
     const session = {
       id: '31', role: 'doctor', mode: 'live', name: 'Example Doctor',
       email: 'doctor@example.test', signedInAt: '2026-01-01T12:00:00Z',
+      token: 'live-token', expiresAt: Date.now() + 60_000,
     };
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(),
-      { provide: AuthService, useValue: { mode: () => 'live', session: () => session } },
+      { provide: AuthService, useValue: { mode: () => 'live', session: () => session, expireIfNeeded: () => false } },
     ] });
     api = TestBed.inject(PatientApi);
     http = TestBed.inject(HttpTestingController);

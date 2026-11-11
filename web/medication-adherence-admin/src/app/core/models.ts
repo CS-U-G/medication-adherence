@@ -8,6 +8,12 @@ export interface Session {
   role: Role;
   mode: AppMode;
   signedInAt: string;
+  /** Backend issued bearer token; absent for fictional demo sessions. */
+  token?: string;
+  /** JWT expiry in milliseconds since epoch. */
+  expiresAt?: number;
+  userId?: number;
+  doctorId?: number | null;
 }
 
 export interface CreateDoctor {

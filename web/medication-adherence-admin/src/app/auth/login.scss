@@ -17,9 +17,8 @@ form{margin-top:22px;display:grid;gap:7px}
 form label[for="staff-password"]{margin-top:5px}
 .password-field{position:relative}.password-field input{padding-right:47px}.password-field button{position:absolute;inset:3px 3px 3px auto;width:39px;border:0;border-radius:7px;background:transparent;color:var(--muted);font-size:17px}.password-field button:hover{background:var(--mint)}
 .sign-in{margin-top:8px;width:100%}
-.demo-separator{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;font-weight:650;margin:18px 0 11px;white-space:nowrap}
-.demo-separator::before,.demo-separator::after{content:"";height:1px;background:var(--line);flex:1}
-.demo-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.demo-buttons .btn{padding-inline:7px;font-size:12px}
+.login-preview{margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+.login-preview p{font-size:13px;line-height:1.5}
 .login-access{display:flex;align-items:flex-start;gap:9px;padding:11px 12px;margin-top:15px;border-radius:9px;background:var(--soft);font-size:12px;color:var(--green)}
 .login-access mm-icon{margin-top:2px}.login-access strong{color:var(--ink)}
 .login-footer{text-align:center;padding:14px;color:var(--muted);font-size:12px}

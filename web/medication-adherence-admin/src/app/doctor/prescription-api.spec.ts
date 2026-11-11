@@ -25,7 +25,7 @@ describe('live prescription API', () => {
       startDate: '2026-11-10', endDate: '2026-11-17', instructions: null,
     }],
   };
-  const session = { mode: 'live', id: '31', role: 'doctor' };
+  const session = { mode: 'live', id: '31', role: 'doctor', token: 'live-token', expiresAt: Date.now() + 60_000 };
   let http: HttpTestingController;
   let api: PrescriptionApi;
 
@@ -33,7 +33,7 @@ describe('live prescription API', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(), provideHttpClientTesting(),
-        { provide: AuthService, useValue: { mode: () => 'live', session: () => session } },
+        { provide: AuthService, useValue: { mode: () => 'live', session: () => session, expireIfNeeded: () => false } },
       ],
     });
     api = TestBed.inject(PrescriptionApi);

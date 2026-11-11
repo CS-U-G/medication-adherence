@@ -13,9 +13,7 @@ export interface DemoState {
 
 export const DEMO_DATA_KEY = 'medminder.demo.data.v1';
 export const DEMO_SESSION_KEY = 'medminder.demo.session.v1';
-export const DEMO_PASSWORD = 'MedMinderDemo!';
 export const DEMO_DOCTOR_EMAIL = 'doctor@medminder.demo';
-export const DEMO_ADMIN_EMAIL = 'admin@medminder.demo';
 export const DEMO_DOCTOR_ID = 'DR-1001';
 
 export function seedDemo(): DemoState {

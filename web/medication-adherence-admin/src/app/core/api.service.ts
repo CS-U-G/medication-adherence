@@ -14,7 +14,8 @@ function isId(value: number | null): value is number {
 function isIdentity(value: WebLoginResponse | null): value is WebLoginResponse {
   return !!value && isId(value.userId) && (value.doctorId === null || isId(value.doctorId)) &&
     typeof value.fullName === 'string' && typeof value.email === 'string' &&
-    (value.role === 'Admin' || value.role === 'Doctor') && typeof value.message === 'string';
+    (value.role === 'Admin' || value.role === 'Doctor') && typeof value.message === 'string' &&
+    (value.token === undefined || typeof value.token === 'string');
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,7 +28,7 @@ export class MedMinderApi {
     const response = await firstValueFrom(
       this.http.post<WebLoginResponse>(`${MEDMINDER_API_ORIGIN}/api/auth/web-login`, request).pipe(timeout(API_TIMEOUT_MS)),
     );
-    if (!isIdentity(response)) throw new Error('The server returned an unexpected sign-in response.');
+    if (!isIdentity(response) || !response.token?.trim()) throw new Error('The server returned an unexpected sign-in response.');
     return response;
   }
 
