@@ -1,0 +1,74 @@
+.management-back {
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.management-form {
+  max-width: 880px;
+}
+
+.management-form-section {
+  padding: 24px;
+}
+
+.management-form-section + .management-form-section {
+  border-top: 1px solid var(--line);
+}
+
+.management-form .form-grid {
+  align-items: start;
+}
+
+.optional {
+  margin-left: 5px;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-inline-end: 50px;
+}
+
+.password-field input::-ms-reveal,
+.password-field input::-ms-clear {
+  display: none;
+}
+
+.password-field .icon-button {
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-color: transparent;
+  width: 36px;
+  height: 36px;
+}
+
+.management-form-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--line);
+}
+
+.management-form-footer .notice {
+  margin-bottom: 14px;
+}
+
+.management-form-footer .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .management-form-section,
+  .management-form-footer {
+    padding: 17px;
+  }
+}

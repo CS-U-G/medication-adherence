@@ -1,0 +1,74 @@
+
+
+.back-link {
+  margin-bottom: 16px;
+}
+
+.back-link mm-icon {
+  transform: rotate(180deg);
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(220px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.builder-items {
+  display: grid;
+  gap: 12px;
+}
+
+.builder-item {
+  min-inline-size: 0;
+  margin: 0;
+  position: relative;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--soft);
+}
+
+.builder-item legend {
+  font-weight: 800;
+  padding-inline: 5px;
+  color: var(--green-deep);
+}
+
+.item-remove {
+  position: absolute;
+  right: 10px;
+  top: -16px;
+  min-height: 25px;
+  padding: 2px 8px;
+  background: var(--surface);
+  font-size: 12px;
+}
+
+.add-item {
+  justify-self: start;
+}
+
+.review-medications {
+  list-style: none;
+  margin: 0 0 12px 0;
+  padding: 0;
+}
+
+.review-medications li {
+  display: grid;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.end-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 830px) {
+  .detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,87 @@
+.directory {
+  overflow: hidden;
+}
+
+.directory-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+}
+
+.directory-heading h2 {
+  font-size: 21px;
+}
+
+.directory-heading p {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+.directory-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.directory-search {
+  position: relative;
+  display: block;
+  width: min(100%, 285px);
+  min-width: 0;
+  font-weight: 500;
+}
+
+.directory-search mm-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.directory-search input {
+  padding-inline-start: 36px;
+}
+
+.directory-filters select {
+  min-width: 122px;
+}
+
+.record-cell {
+  min-width: 0;
+}
+
+.doctor-cell-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doctor-cell-wrap strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.row-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .directory-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .directory-filters {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .directory-search {
+    width: 100%;
+  }
+}

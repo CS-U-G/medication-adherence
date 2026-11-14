@@ -1,0 +1,90 @@
+
+<header class="status-header">
+  <mm-brand></mm-brand>
+  <a class="text-link" routerLink="/">Back to homepage</a>
+</header>
+
+<main id="main" class="status-main">
+  <div class="eyebrow">Platform availability</div>
+  <h1>A clear view of what’s ready.</h1>
+  <p class="intro">Check the service connection and review which staff tools are available.</p>
+
+  
+  <section class="card card-pad connection" aria-labelledby="connection-title" [attr.aria-busy]="busy()">
+    <div>
+      <span class="metric-icon">
+        <mm-icon name="activity"></mm-icon>
+      </span>
+      <h2 id="connection-title">Live API connection</h2>
+    </div>
+
+    <p role="status" aria-live="polite">{{ message() }}</p>
+
+    @if (checkedAt()) {
+      <small>Last checked {{ checkedAt() | date:'medium' }}</small>
+    }
+
+    <button class="btn" type="button" [disabled]="busy()" (click)="check()">
+      {{ busy() ? 'Checking connection…' : 'Check connection' }}
+      <mm-icon name="arrow"></mm-icon>
+    </button>
+
+    <p class="fine-print">
+      This checks service reachability only. It does not establish a staff session or load patient information.
+    </p>
+  </section>
+
+  
+  <section class="capabilities" aria-labelledby="capabilities-title">
+    <h2 id="capabilities-title">Staff service availability</h2>
+
+    <article>
+      <span class="step-no">
+        <mm-icon name="stethoscope"></mm-icon>
+      </span>
+      <div>
+        <h3>Doctor account creation</h3>
+        @if (live) {
+          <p>Doctor registration sends your details to the live service. The connection check does not confirm account creation.</p>
+          <a class="text-link" routerLink="/register">
+            Create doctor account <mm-icon name="arrow"></mm-icon>
+          </a>
+        } @else {
+          <p>Live account creation is disabled in this demo.</p>
+        }
+      </div>
+    </article>
+
+    <article>
+      <span class="step-no">01</span>
+      <div>
+        <h3>Staff sign in</h3>
+        <p>Doctors and administrators use one sign-in and continue to the workspace for their account.</p>
+      </div>
+      <span class="badge badge-green">Available</span>
+    </article>
+
+    <article>
+      <span class="step-no">02</span>
+      <div>
+        <h3>Patients, doctor accounts, medications and prescriptions</h3>
+        <p>These tools are available to authenticated staff with the required permissions.</p>
+      </div>
+      <span class="badge badge-green">Staff access</span>
+    </article>
+
+    <article>
+      <span class="step-no">03</span>
+      <div>
+        <h3>Adherence reports</h3>
+        <p>The API does not provide live dose outcomes yet.</p>
+      </div>
+      <span class="badge">Not available</span>
+    </article>
+  </section>
+
+  <div class="status-footer">
+    <p>Your administrator can help with access and service availability.</p>
+    <a class="btn btn-outline" routerLink="/login">Staff sign in</a>
+  </div>
+</main>

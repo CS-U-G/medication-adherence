@@ -1,0 +1,138 @@
+
+<header class="page-heading">
+  <div>
+    <div class="eyebrow">Administration workspace</div>
+    <h1>Platform overview</h1>
+    <p>Monitor staff access and manage the medication catalogue.</p>
+  </div>
+  <a routerLink="/admin/doctors/new" class="btn">
+    <mm-icon name="plus"></mm-icon> Create doctor account
+  </a>
+</header>
+
+@if (report(); as demoReport) {
+  <mm-overview-panels [stats]="stats()" [report]="demoReport">
+    <ng-container [ngTemplateOutlet]="doctorPanel"></ng-container>
+  </mm-overview-panels>
+} @else {
+  
+  <div class="metrics">
+    @for (stat of stats(); track stat.label) {
+      <article class="card metric">
+        <span class="metric-icon">
+          <mm-icon [name]="stat.icon"></mm-icon>
+        </span>
+        <div class="metric-label">{{ stat.label }}</div>
+        <strong>{{ stat.value }}</strong>
+        <small>{{ stat.note }}</small>
+      </article>
+    }
+  </div>
+
+  
+  <div class="overview-grid">
+    <section class="card card-pad overview-chart">
+      <div class="panel-heading">
+        <h2>Weekly adherence</h2>
+      </div>
+      <div class="empty-state">
+        <h3>Adherence data unavailable</h3>
+        <p>The service does not provide platform-wide dose outcomes.</p>
+      </div>
+    </section>
+
+    <ng-container [ngTemplateOutlet]="doctorPanel"></ng-container>
+  </div>
+}
+
+
+<ng-template #doctorPanel>
+  <section class="card card-pad overview-side">
+    <div class="panel-heading">
+      <div>
+        <h2>Doctor accounts</h2>
+        <p>Staff access across the platform.</p>
+      </div>
+      <span class="metric-icon">
+        <mm-icon name="shield"></mm-icon>
+      </span>
+    </div>
+
+    <div class="follow-list">
+      @if (doctorsError()) {
+        <div class="empty-state">
+          <p role="alert">Doctor accounts could not be loaded.</p>
+          <button class="btn btn-secondary" type="button" (click)="loadDoctors()">Try again</button>
+        </div>
+      } @else {
+        @if (doctors(); as accounts) {
+          @for (doctor of accounts.slice(0, 4); track doctor.id) {
+            <a [routerLink]="['/admin/doctors', doctor.id]" class="follow-row">
+              <span class="avatar">{{ initials(doctor.name) }}</span>
+              <div>
+                <strong>{{ doctor.name }}</strong>
+                <small>{{ doctor.specialty }}</small>
+              </div>
+              <span class="badge" [class.badge-green]="doctor.active">
+                {{ doctor.active ? 'Active' : 'Inactive' }}
+              </span>
+              <mm-icon name="chevron"></mm-icon>
+            </a>
+          } @empty {
+            <div class="empty-state">
+              <h3>No doctor accounts</h3>
+              <p>Create an account to give a doctor access.</p>
+            </div>
+          }
+        } @else {
+          <div class="empty-state" role="status">
+            <p>Loading doctor accounts…</p>
+          </div>
+        }
+      }
+    </div>
+
+    <a routerLink="/admin/doctors" class="text-link side-link">
+      Manage doctor accounts <mm-icon name="arrow"></mm-icon>
+    </a>
+  </section>
+</ng-template>
+
+
+<section class="card card-pad overview-shortcuts">
+  <div class="panel-heading">
+    <div>
+      <h2>Manage the platform</h2>
+      <p>Keep staff access and the catalogue up to date.</p>
+    </div>
+  </div>
+
+  <div class="shortcut-grid">
+    <a routerLink="/admin/doctors">
+      <span class="metric-icon"><mm-icon name="users"></mm-icon></span>
+      <span>
+        <strong>Doctor accounts</strong>
+        <small>{{ doctorCountLabel() }}</small>
+      </span>
+      <mm-icon name="chevron"></mm-icon>
+    </a>
+
+    <a routerLink="/admin/medications">
+      <span class="metric-icon"><mm-icon name="pill"></mm-icon></span>
+      <span>
+        <strong>Medication catalogue</strong>
+        <small>{{ medicationCountLabel() }}</small>
+      </span>
+      <mm-icon name="chevron"></mm-icon>
+    </a>
+
+    <a routerLink="/admin/settings">
+      <span class="metric-icon"><mm-icon name="settings"></mm-icon></span>
+      <span>
+        <strong>Account settings</strong>
+        <small>Profile and session</small>
+      </span>
+      <mm-icon name="chevron"></mm-icon>
+    </a>
+  </div>
+</section>
