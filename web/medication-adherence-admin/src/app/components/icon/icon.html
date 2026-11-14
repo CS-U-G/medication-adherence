@@ -1,0 +1,14 @@
+
+<svg
+  aria-hidden="true"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  @for (path of paths(); track path) {
+    <path [attr.d]="path" />
+  }
+</svg>
