@@ -1,0 +1,48 @@
+
+
+.list-head {
+  padding: 22px 24px;
+}
+
+.list-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, 0.5fr);
+  gap: 14px;
+}
+
+.patient-identity {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  color: var(--ink);
+}
+
+.patient-identity small {
+  display: block;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+a.patient-identity:hover strong {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.row-action {
+  text-align: right;
+}
+
+.row-action .text-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .list-head {
+    padding: 16px 17px;
+  }
+  .list-filters {
+    grid-template-columns: 1fr;
+  }
+}

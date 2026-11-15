@@ -1,0 +1,134 @@
+<header class="page-heading">
+  <div>
+    <div class="eyebrow">Clinical workspace</div>
+    <h1>Doctor overview</h1>
+    <p>Welcome, {{ auth.session()?.name }}. Review your patients and prescriptions.</p>
+  </div>
+  <a routerLink="/doctor/patients/register" class="btn">
+    <mm-icon name="plus"></mm-icon> Register patient
+  </a>
+</header>
+
+@if (live) {
+@if (summary.isLoading()) {
+<p class="notice" role="status">Loading patients and prescriptions…</p>
+} @else if (summary.error()) {
+<div class="notice error" role="alert">
+  Could not load your overview.
+  <button class="btn btn-outline" type="button" (click)="summary.reload()">Retry</button>
+</div>
+} @else if (summary.value(); as totals) {
+
+<div class="metrics">
+  <article class="card metric">
+    <span class="metric-icon">
+      <mm-icon name="users"></mm-icon>
+    </span>
+    <div class="metric-label">My patients</div>
+    <strong>{{ totals.patients }}</strong>
+    <small>Registered in your roster</small>
+  </article>
+
+  <article class="card metric">
+    <span class="metric-icon">
+      <mm-icon name="file"></mm-icon>
+    </span>
+    <div class="metric-label">Active prescriptions</div>
+    <strong>{{ totals.activePrescriptions }}</strong>
+    <small>Across your patient roster</small>
+  </article>
+</div>
+}
+
+<section class="card card-pad">
+  <h2>Adherence reports</h2>
+
+  @if (report().rate !== null) {
+  <div style="display: flex; gap: 20px; margin-top: 10px;">
+    <p><strong>Adherence Rate:</strong> {{ report().rate }}%</p>
+    <p><strong>Taken:</strong> {{ report().taken }}</p>
+    <p><strong>Missed:</strong> {{ report().missed }}</p>
+    <p><strong>Total Due:</strong> {{ report().due }}</p>
+  </div>
+  } @else {
+  <p>Live dose outcomes are unavailable.</p>
+  }
+</section>
+
+} @else {
+
+<mm-overview-panels [stats]="stats()" [report]="report()">
+  <section class="card card-pad overview-side">
+    <div class="panel-heading">
+      <div>
+        <h2>Needs follow-up</h2>
+        <p>Below 70% adherence over the last 7 days.</p>
+      </div>
+      <span class="metric-icon warn">
+        <mm-icon name="alert"></mm-icon>
+      </span>
+    </div>
+
+    <div class="follow-list">
+      @for (row of followUps(); track row.patient.id) {
+      <a [routerLink]="['/doctor/patients', row.patient.id]" class="follow-row">
+        <span class="avatar alt">{{ initials(row.patient.name) }}</span>
+        <div>
+          <strong>{{ row.patient.name }}</strong>
+          <small>{{ row.report.missed }} missed · {{ row.report.due }} due</small>
+        </div>
+        <span class="badge badge-amber">{{ row.report.rate }}%</span>
+        <mm-icon name="chevron"></mm-icon>
+      </a>
+      } @empty {
+      <div class="empty-state">
+        <h3>No patients flagged</h3>
+        <p>Patients below 70% will appear here once doses are recorded.</p>
+      </div>
+      }
+    </div>
+
+    <a routerLink="/doctor/patients" class="text-link side-link">
+      View patient directory <mm-icon name="arrow"></mm-icon>
+    </a>
+  </section>
+</mm-overview-panels>
+}
+
+<section class="card card-pad overview-shortcuts">
+  <div class="panel-heading">
+    <div>
+      <h2>Patient care</h2>
+      <p>Open the tools you use most often.</p>
+    </div>
+  </div>
+
+  <div class="shortcut-grid">
+    <a routerLink="/doctor/patients">
+      <span class="metric-icon"><mm-icon name="users"></mm-icon></span>
+      <span>
+        <strong>Patient directory</strong>
+        <small>Find a patient record</small>
+      </span>
+      <mm-icon name="chevron"></mm-icon>
+    </a>
+
+    <a routerLink="/doctor/prescriptions/new">
+      <span class="metric-icon"><mm-icon name="file"></mm-icon></span>
+      <span>
+        <strong>Issue prescription</strong>
+        <small>Set dose, frequency, and duration</small>
+      </span>
+      <mm-icon name="chevron"></mm-icon>
+    </a>
+
+    <a routerLink="/doctor/reports">
+      <span class="metric-icon"><mm-icon name="chart"></mm-icon></span>
+      <span>
+        <strong>Adherence reports</strong>
+        <small>Review dose outcomes by patient</small>
+      </span>
+      <mm-icon name="chevron"></mm-icon>
+    </a>
+  </div>
+</section>

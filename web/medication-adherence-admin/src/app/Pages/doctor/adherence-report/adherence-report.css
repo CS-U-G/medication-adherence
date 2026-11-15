@@ -1,0 +1,65 @@
+
+
+.back-link {
+  margin-bottom: 16px;
+}
+
+.back-link mm-icon {
+  transform: rotate(180deg);
+}
+
+.report-filters,
+.report-stats,
+.report-chart {
+  margin-bottom: 16px;
+}
+
+.report-filters .list-filters {
+  max-width: 630px;
+}
+
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.report-stats strong {
+  display: block;
+  font-size: 29px;
+  letter-spacing: -0.045em;
+  margin: 5px 0;
+  line-height: 1.15;
+}
+
+.report-stats p {
+  font-size: 12px;
+}
+
+.report-empty .metric-icon {
+  margin: 0 auto 13px;
+}
+
+@media (max-width: 640px) {
+  .report-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .report-stats article {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3px 8px;
+    padding-block: 10px;
+  }
+  .report-stats strong {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .report-stats p {
+    grid-column: 1;
+  }
+  .report-chart .panel-heading {
+    flex-wrap: wrap;
+  }
+}
