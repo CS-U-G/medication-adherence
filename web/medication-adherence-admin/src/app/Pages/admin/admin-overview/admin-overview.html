@@ -1,27 +1,27 @@
-
 <header class="page-heading">
   <div>
     <div class="eyebrow">Administration workspace</div>
     <h1>Platform overview</h1>
-    <p>Monitor staff access and manage the medication catalogue.</p>
+    <p>Live system statistics across doctors, patients and medications.</p>
   </div>
   <a routerLink="/admin/doctors/new" class="btn">
     <mm-icon name="plus"></mm-icon> Create doctor account
   </a>
 </header>
 
-@if (report(); as demoReport) {
-  <mm-overview-panels [stats]="stats()" [report]="demoReport">
+@if (demoReport(); as demoData) {
+  <mm-overview-panels [stats]="stats()" [report]="demoData">
     <ng-container [ngTemplateOutlet]="doctorPanel"></ng-container>
   </mm-overview-panels>
 } @else {
-  
+  <div class="admin-toolbar">
+    <div class="admin-live-indicator">Live data from the backend</div>
+    <button class="btn btn-secondary" type="button" [disabled]="loadingDoctors() || loadingPatients() || loadingMedications()" (click)="refresh()">Refresh statistics</button>
+  </div>
   <div class="metrics">
     @for (stat of stats(); track stat.label) {
       <article class="card metric">
-        <span class="metric-icon">
-          <mm-icon [name]="stat.icon"></mm-icon>
-        </span>
+        <span class="metric-icon"><mm-icon [name]="stat.icon"></mm-icon></span>
         <div class="metric-label">{{ stat.label }}</div>
         <strong>{{ stat.value }}</strong>
         <small>{{ stat.note }}</small>
@@ -29,22 +29,88 @@
     }
   </div>
 
-  
-  <div class="overview-grid">
-    <section class="card card-pad overview-chart">
+  <div class="admin-report-grid">
+    <section class="card card-pad admin-data-panel">
       <div class="panel-heading">
-        <h2>Weekly adherence</h2>
+        <div>
+          <h2>Patients by doctor</h2>
+          <p>Percentage share across all doctor rosters.</p>
+        </div>
       </div>
-      <div class="empty-state">
-        <h3>Adherence data unavailable</h3>
-        <p>The service does not provide platform-wide dose outcomes.</p>
-      </div>
+      @if (loadingDoctors() || loadingPatients()) {
+        <div class="empty-state" role="status">Loading doctor and patient statistics…</div>
+      } @else if (doctorsError() || patientsError()) {
+        <div class="empty-state" role="alert">
+          <h3>Patient statistics unavailable</h3>
+          <p>At least one required roster could not be retrieved. No incomplete totals are shown.</p>
+          <button type="button" class="btn btn-secondary" (click)="refresh()">Try again</button>
+        </div>
+      } @else {
+        @if (workloadCount() > 0) {
+          <div class="admin-workload-pie">
+            <div class="admin-pie" role="img"
+              [attr.aria-label]="'Share of patient roster assignments by doctor'"
+              [style.background]="workloadPie()">
+              <div class="admin-pie-centre" aria-hidden="true"><strong>{{ workloadCount() }}</strong><small>assignments</small></div>
+            </div>
+            <p class="admin-pie-caption">Share of patient roster assignments</p>
+          </div>
+        } @else {
+          <div class="empty-state">No patients are assigned to doctors yet.</div>
+        }
+        <div class="workload-list">
+          @for (row of workload(); track row.doctor.id) {
+            <div class="workload-row">
+              <div class="workload-header">
+                <a [routerLink]="['/admin/doctors', row.doctor.id]">
+                  <span class="admin-legend-dot" [style.background]="row.color"></span>{{ row.doctor.name }}
+                </a>
+                <strong>{{ row.patients ?? '—' }} patients · {{ row.percent }}%</strong>
+              </div>
+              <div class="workload-track"><div class="workload-bar" [style.background]="row.color" [style.width.%]="row.percent"></div></div>
+            </div>
+          } @empty {
+            <div class="empty-state">No doctor accounts have been registered.</div>
+          }
+        </div>
+      }
     </section>
-
     <ng-container [ngTemplateOutlet]="doctorPanel"></ng-container>
   </div>
-}
 
+  <div class="admin-pie-grid">
+    @for (chart of statusBreakdowns(); track chart.title) {
+      <section class="card card-pad admin-data-panel">
+        <div class="panel-heading">
+          <div><h2>{{ chart.title }}</h2><p>Active and inactive breakdown</p></div>
+        </div>
+        @if (chart.total === null) {
+          <div class="empty-state" role="status">Statistics are loading or unavailable.</div>
+        } @else {
+          <div class="admin-pie-layout">
+            <div class="admin-pie" role="img"
+              [attr.aria-label]="chart.title + ': ' + chart.activePercent + '% active, ' + chart.inactivePercent + '% inactive'"
+              [style.background]="chart.gradient">
+              <div class="admin-pie-centre" aria-hidden="true"><strong>{{ chart.activePercent }}%</strong><small>active</small></div>
+            </div>
+            <div class="admin-pie-legend">
+              <div class="admin-legend-line">
+                <span><span class="admin-legend-dot admin-legend-active"></span> Active</span>
+                <strong>{{ chart.active }} <small>({{ chart.activePercent }}%)</small></strong>
+              </div>
+              <div class="admin-legend-line">
+                <span><span class="admin-legend-dot admin-legend-inactive"></span> Inactive</span>
+                <strong>{{ chart.inactive }} <small>({{ chart.inactivePercent }}%)</small></strong>
+              </div>
+              <div class="admin-pie-total">Total <strong>{{ chart.total }}</strong></div>
+            </div>
+          </div>
+        }
+      </section>
+    }
+  </div>
+  <p class="admin-data-note">Dose adherence is not included in these totals: the existing patient dose-report API does not permit the Admin role. No estimates or fabricated outcomes are displayed.</p>
+}
 
 <ng-template #doctorPanel>
   <section class="card card-pad overview-side">
@@ -53,86 +119,40 @@
         <h2>Doctor accounts</h2>
         <p>Staff access across the platform.</p>
       </div>
-      <span class="metric-icon">
-        <mm-icon name="shield"></mm-icon>
-      </span>
+      <span class="metric-icon"><mm-icon name="shield"></mm-icon></span>
     </div>
-
     <div class="follow-list">
       @if (doctorsError()) {
         <div class="empty-state">
           <p role="alert">Doctor accounts could not be loaded.</p>
-          <button class="btn btn-secondary" type="button" (click)="loadDoctors()">Try again</button>
+          <button class="btn btn-secondary" type="button" (click)="refresh()">Try again</button>
         </div>
       } @else {
         @if (doctors(); as accounts) {
           @for (doctor of accounts.slice(0, 4); track doctor.id) {
             <a [routerLink]="['/admin/doctors', doctor.id]" class="follow-row">
               <span class="avatar">{{ initials(doctor.name) }}</span>
-              <div>
-                <strong>{{ doctor.name }}</strong>
-                <small>{{ doctor.specialty }}</small>
-              </div>
-              <span class="badge" [class.badge-green]="doctor.active">
-                {{ doctor.active ? 'Active' : 'Inactive' }}
-              </span>
+              <div><strong>{{ doctor.name }}</strong><small>{{ doctor.specialty }}</small></div>
+              <span class="badge" [class.badge-green]="doctor.active">{{ doctor.active ? 'Active' : 'Inactive' }}</span>
               <mm-icon name="chevron"></mm-icon>
             </a>
           } @empty {
-            <div class="empty-state">
-              <h3>No doctor accounts</h3>
-              <p>Create an account to give a doctor access.</p>
-            </div>
+            <div class="empty-state"><h3>No doctor accounts</h3><p>Create an account to give a doctor access.</p></div>
           }
         } @else {
-          <div class="empty-state" role="status">
-            <p>Loading doctor accounts…</p>
-          </div>
+          <div class="empty-state" role="status"><p>Loading doctor accounts…</p></div>
         }
       }
     </div>
-
-    <a routerLink="/admin/doctors" class="text-link side-link">
-      Manage doctor accounts <mm-icon name="arrow"></mm-icon>
-    </a>
+    <a routerLink="/admin/doctors" class="text-link side-link">Manage doctor accounts <mm-icon name="arrow"></mm-icon></a>
   </section>
 </ng-template>
 
-
 <section class="card card-pad overview-shortcuts">
-  <div class="panel-heading">
-    <div>
-      <h2>Manage the platform</h2>
-      <p>Keep staff access and the catalogue up to date.</p>
-    </div>
-  </div>
-
+  <div class="panel-heading"><div><h2>Manage the platform</h2><p>Keep staff access and the catalogue up to date.</p></div></div>
   <div class="shortcut-grid">
-    <a routerLink="/admin/doctors">
-      <span class="metric-icon"><mm-icon name="users"></mm-icon></span>
-      <span>
-        <strong>Doctor accounts</strong>
-        <small>{{ doctorCountLabel() }}</small>
-      </span>
-      <mm-icon name="chevron"></mm-icon>
-    </a>
-
-    <a routerLink="/admin/medications">
-      <span class="metric-icon"><mm-icon name="pill"></mm-icon></span>
-      <span>
-        <strong>Medication catalogue</strong>
-        <small>{{ medicationCountLabel() }}</small>
-      </span>
-      <mm-icon name="chevron"></mm-icon>
-    </a>
-
-    <a routerLink="/admin/settings">
-      <span class="metric-icon"><mm-icon name="settings"></mm-icon></span>
-      <span>
-        <strong>Account settings</strong>
-        <small>Profile and session</small>
-      </span>
-      <mm-icon name="chevron"></mm-icon>
-    </a>
+    <a routerLink="/admin/doctors"><span class="metric-icon"><mm-icon name="users"></mm-icon></span><span><strong>Doctor accounts</strong><small>{{ doctorCountLabel() }}</small></span><mm-icon name="chevron"></mm-icon></a>
+    <a routerLink="/admin/medications"><span class="metric-icon"><mm-icon name="pill"></mm-icon></span><span><strong>Medication catalogue</strong><small>{{ medicationCountLabel() }}</small></span><mm-icon name="chevron"></mm-icon></a>
+    <a routerLink="/admin/settings"><span class="metric-icon"><mm-icon name="settings"></mm-icon></span><span><strong>Account settings</strong><small>Profile and session</small></span><mm-icon name="chevron"></mm-icon></a>
   </div>
 </section>

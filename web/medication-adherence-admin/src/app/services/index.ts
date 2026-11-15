@@ -2,6 +2,7 @@
 export * from './api/api.service';
 export * from './api/auth.service';
 export * from './api/patient-api';
+export * from './api/dose-api';
 export * from './api/prescription-api';
 export * from './api/medication-api';
 export * from './api/user-api';
