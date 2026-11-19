@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:med_minder/constants/app_colors.dart';
+import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/screens/settings.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -11,11 +12,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final List medications = [
-    {'time': '14:00', 'name': 'Metformin', 'dosage': '500 mg · 1 tablet'},
-    {'time': '20:00', 'name': 'Atorvastatin', 'dosage': '20 mg · 1 tablet'},
-    {'time': '02:00', 'name': 'Atorvastatin', 'dosage': '20 mg · 1 tablet'},
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -59,18 +55,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                   ],
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.medMinderGreen,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.add, color: Colors.white),
-                    onPressed: () {
-                      // TODO: Navigate to Add Medication screen
-                    },
-                  ),
                 ),
               ],
             ),
@@ -146,9 +130,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: medications.length,
+              itemCount: DB.medications.length,
               itemBuilder: (context, index) {
-                final med = medications[index];
+                final med = DB.medications[index];
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -158,7 +142,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       children: [
                         SlidableAction(
                           onPressed: (context) {
-                            // TODO: Add the Delete function here
+                            setState(() {
+                              DB.deleteMedication(index);
+                            });
                           },
                           icon: Icons.delete,
                           backgroundColor: Colors.red.shade300,
@@ -181,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  med['time']!,
+                                  med.time,
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
@@ -190,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  med['name']!,
+                                  med.name,
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -199,7 +185,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  med['dosage']!,
+                                  med.dosage,
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey.shade600,

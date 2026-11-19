@@ -1,14 +1,15 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:med_minder/models/medications.dart';
 
 class DB {
   static final _passwordsBox = Hive.box("passwordsBox");
   static final _medicationsBox = Hive.box("medicationsBox");
 
   static List _passwords = [];
-  static List medications = [
-    [{'time': '14:00', 'name': 'Metformin', 'dosage': '500 mg · 1 tablet'}],
-    [{'time': '20:00', 'name': 'Atorvastatin', 'dosage': '20 mg · 1 tablet'}],
-    [{'time': '02:00', 'name': 'Atorvastatin', 'dosage': '20 mg · 1 tablet'}],
+  static List<Medication> medications = [
+    Medication(time: '14:00', name: 'Metformin', dosage: '500 mg · 1 tablet'),
+    Medication(time: '20:00', name: 'Atorvastatin', dosage: '20 mg · 1 tablet'),
+    Medication(time: '02:00', name: 'Atorvastatin', dosage: '20 mg · 1 tablet'),
   ];
 
   static void onboardingSeen() async {
@@ -52,19 +53,22 @@ class DB {
   }
 
   //The medications side of logic type of shit..
-  static void loadMedicaitonsData() {
+  static void loadMedicationsData() {
     final savedList = _medicationsBox.get("medicationsList");
     if (savedList is List) {
-      medications = savedList;
+      medications = savedList
+          .map((item) => Medication.fromMap(item as Map))
+          .toList();
     }
   }
 
-  static void updatemedicationsData() {
-    _medicationsBox.put("medicationsList", _passwords);
+  static void updateMedicationsData() {
+    final mappedList = medications.map((med) => med.toMap()).toList();
+    _medicationsBox.put("medicationsList", mappedList);
   }
 
   static void deleteMedication(int index) {
     medications.removeAt(index);
-    updatemedicationsData();
+    updateMedicationsData();
   }
 }

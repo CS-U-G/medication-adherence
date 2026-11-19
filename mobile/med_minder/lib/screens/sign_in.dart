@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med_minder/screens/dashboard.dart';
-import 'package:med_minder/models/db.dart';
+import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/shared/bottom_navigation.dart';
 
 import '../widgets/password_field.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:med_minder/screens/login.dart';
 import 'package:med_minder/screens/onboarding.dart';
-import 'package:med_minder/models/db.dart';
+import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/shared/bottom_navigation.dart';
 
 void main() async {
