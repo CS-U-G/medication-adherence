@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med_minder/screens/dashboard.dart';
+import 'package:med_minder/services/db.dart';
 import 'package:med_minder/shared/bottom_navigation.dart';
 
 import '../widgets/password_field.dart';
@@ -76,6 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+
               buildPasswordField(
                 controller: _passwordController,
                 hintText: 'Enter password',
@@ -97,6 +99,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+
               buildPasswordField(
                 controller: _confirmPasswordController,
                 hintText: 'confirm password',
@@ -110,7 +113,7 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 14),
 
               const Text(
-                'Use at least 4 characters for a secure password.',
+                'Use at least 4 characters.',
                 style: TextStyle(fontSize: 13, color: AppColors.textMuted),
               ),
               const SizedBox(height: 24),
@@ -151,14 +154,15 @@ class _SignInScreenState extends State<SignInScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 54,
+                // Save & Continue button
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BottomNavigationShared(),
-                      ),
-                    );
+                    if (DB.confirmPassword(
+                      _passwordController.text,
+                      _confirmPasswordController.text,
+                    )) {
+                      Navigator.pop(context);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.medMinderGreen,
@@ -179,6 +183,7 @@ class _SignInScreenState extends State<SignInScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 54,
+                // Enter without password button
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.push(
