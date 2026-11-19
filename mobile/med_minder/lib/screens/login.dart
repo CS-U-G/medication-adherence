@@ -17,7 +17,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordObscured = true;
-  bool _isConfirmPasswordObscured = true;
 
   @override
   void dispose() {
