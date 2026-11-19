@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med_minder/screens/login.dart';
+import 'package:med_minder/services/db.dart';
 import 'package:med_minder/widgets/feature_row.dart';
 
 import '../constants/app_colors.dart';
@@ -108,6 +109,7 @@ class OnboardingScreen extends StatelessWidget {
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () {
+                    DB.onboardingSeen();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
