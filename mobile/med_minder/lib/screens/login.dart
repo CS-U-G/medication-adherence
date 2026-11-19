@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:med_minder/screens/dashboard.dart';
 import 'package:med_minder/screens/sign_in.dart';
+import 'package:med_minder/services/db.dart';
+import 'package:med_minder/shared/bottom_navigation.dart';
+import 'package:med_minder/widgets/password_field.dart';
 
 import '../constants/app_colors.dart';
 
@@ -14,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordObscured = true;
+  bool _isConfirmPasswordObscured = true;
 
   @override
   void dispose() {
@@ -105,68 +109,32 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 10),
 
-              TextFormField(
+              buildPasswordField(
                 controller: _passwordController,
-                obscureText: _isPasswordObscured,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: AppColors.textPrimary,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Enter password',
-                  hintStyle: const TextStyle(
-                    fontSize: 15,
-                    color: AppColors.textMuted,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.surfaceCard,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 16,
-                  ),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordObscured = !_isPasswordObscured;
-                      });
-                    },
-                    icon: Icon(
-                      _isPasswordObscured
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: AppColors.textMuted,
-                      size: 20,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: AppColors.borderSubtle,
-                      width: 1,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: AppColors.medMinderGreen,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
+                hintText: "Enter password",
+                isObscured: _isPasswordObscured,
+                onToggleVisibility: () {
+                  setState(() {
+                    _isConfirmPasswordObscured = !_isConfirmPasswordObscured;
+                  });
+                },
               ),
               const SizedBox(height: 28),
 
               SizedBox(
                 width: double.infinity,
                 height: 54,
+                //Enter button
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const DashboardScreen(),
-                      ),
-                    );
+                    if (DB.checkPassword(_passwordController.text)) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BottomNavigationShared(),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.medMinderGreen,
@@ -187,6 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 54,
+                //I don't have a password button
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.push(
