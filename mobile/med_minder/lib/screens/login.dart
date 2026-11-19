@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 isObscured: _isPasswordObscured,
                 onToggleVisibility: () {
                   setState(() {
-                    _isConfirmPasswordObscured = !_isConfirmPasswordObscured;
+                    _isPasswordObscured = !_isPasswordObscured;
                   });
                 },
               ),
