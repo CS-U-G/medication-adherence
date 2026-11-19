@@ -161,6 +161,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       _passwordController.text,
                       _confirmPasswordController.text,
                     )) {
+                      DB.hasPassword();
                       Navigator.pop(context);
                     }
                   },
@@ -186,6 +187,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 // Enter without password button
                 child: OutlinedButton(
                   onPressed: () {
+                    DB.skippedPassword();
                     Navigator.push(
                       context,
                       MaterialPageRoute(

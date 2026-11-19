@@ -41,6 +41,17 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     }
   }
 
+  final TextEditingController _medNameController = TextEditingController();
+  final TextEditingController _medDosageController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    _medNameController.dispose();
+    _medDosageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final calculatedTimes = _calculateTimes();
@@ -51,25 +62,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Back Button
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new,
-                  size: 18,
-                  color: Color(0xFF1D1F1E),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
             // Title Header
             const Text(
               'YOUR ROUTINE',
