@@ -50,10 +50,13 @@ class DB {
   static bool confirmPassword(String input1, String input2) {
     final a = input1.trim();
     final b = input2.trim();
-    if (a.length >= 4 && a == b) {
-      _passwords.add(a);
-      updatePasswordsData();
-      return true;
+    if (!_passwords.contains(a)) {
+      if (a.length >= 4 && a == b) {
+        _passwords.add(a);
+        updatePasswordsData();
+        return true;
+      }
+      return false;
     }
     return false;
   }

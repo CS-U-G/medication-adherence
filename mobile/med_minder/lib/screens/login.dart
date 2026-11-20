@@ -142,11 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
 
                     if (isMatched) {
-                      Navigator.pushReplacement(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const BottomNavigationShared(),
                         ),
+                        (route) => false,
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 //I don't have a password button
                 child: OutlinedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const SignInScreen(),

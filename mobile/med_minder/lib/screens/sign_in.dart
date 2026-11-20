@@ -193,11 +193,12 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       );
 
-                      Navigator.pushReplacement(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const BottomNavigationShared(),
                         ),
+                        (route) => false,
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -241,11 +242,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: OutlinedButton(
                   onPressed: () {
                     DB.skippedPassword();
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const BottomNavigationShared(),
                       ),
+                      (route) => false,
                     );
                   },
                   style: OutlinedButton.styleFrom(
