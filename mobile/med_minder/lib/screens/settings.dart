@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/constants/app_colors.dart';
 import 'package:med_minder/widgets/password_field.dart';
+import 'package:med_minder/widgets/sittings_card.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -78,7 +80,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () async {
+                bool confirmed = await DB.confirmChangingPassword(
+                  _oldPassCtrl.text,
+                  _newPassCtrl.text,
+                );
+                if (!context.mounted) return;
+
+                if (confirmed) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Password changed!'),
+                      backgroundColor: AppColors.medMinderGreen,
+                      behavior: SnackBarBehavior.floating,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text(
+                        'Could not change password. Check your inputs.',
+                      ),
+                      backgroundColor: Colors.red.shade700,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
               child: const Text(
                 'Change',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -89,56 +120,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-
-  Widget _settingCard(
-    IconData icon,
-    String title,
-    String subtitle,
-    VoidCallback onTap,
-  ) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(14, 19, 111, 73),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: AppColors.medMinderGreen, size: 20),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right, color: Colors.grey.shade500),
-        ],
-      ),
-    ),
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -167,13 +148,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            _settingCard(
+            settingCard(
               Icons.lock_outline,
               'Change App Password',
-              'Keep your routine secure',
+              "Leave a blank if you don't have one",
               _showChangePasswordDialog,
             ),
-            _settingCard(Icons.wb_sunny_outlined, 'App Theme', 'Light', () {}),
+            settingCard(Icons.wb_sunny_outlined, 'App Theme', 'Light', () {}),
           ],
         ),
       ),

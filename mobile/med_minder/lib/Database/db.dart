@@ -51,6 +51,39 @@ class DB {
     return false;
   }
 
+  static Future<bool> confirmChangingPassword(
+    String input1,
+    String input2,
+  ) async {
+    var hasOrSkippedPasswordBox = await Hive.openBox("hasOrSkippedPassword");
+    final bool hasPassword = hasOrSkippedPasswordBox.get(
+      'hasPasswordValue',
+      defaultValue: false,
+    ) as bool;
+
+    final oldPass = input1.trim();
+    final newPass = input2.trim();
+    if (hasPassword) {
+      if (!_passwords.contains(oldPass) || newPass.length < 4) {
+        return false;
+      } else if (oldPass == newPass) {
+        return false;
+      }
+      _passwords.remove(oldPass);
+      _passwords.add(newPass);
+      updatePasswordsData();
+      return true;
+    } else {
+      if (newPass.length < 4) {
+        return false;
+      }
+      _passwords.add(newPass);
+      await DB.hasPassword();
+      updatePasswordsData();
+      return true;
+    }
+  }
+
   //The medications side of logic type of shit..
   static void loadMedicationsData() {
     final savedList = _medicationsBox.get("medicationsList");
@@ -95,7 +128,7 @@ class DB {
     _historyBox.put("historyList", historyLogs);
   }
 
-static void recordDoseAction(int index, String status) {
+  static void recordDoseAction(int index, String status) {
     final med = medications[index];
     historyLogs.insert(0, {
       'date': 'Today · ${med.time}',
@@ -106,4 +139,6 @@ static void recordDoseAction(int index, String status) {
     updateHistoryData();
     deleteMedication(index);
   }
+
+  //Theme
 }
