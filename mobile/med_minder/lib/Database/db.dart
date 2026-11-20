@@ -4,9 +4,11 @@ import 'package:med_minder/models/medications.dart';
 class DB {
   static final _passwordsBox = Hive.box("passwordsBox");
   static final _medicationsBox = Hive.box("medicationsBox");
+  static final _historyBox = Hive.box("historyBox");
 
   static List _passwords = [];
   static List<Medication> medications = [];
+  static List historyLogs = [];
 
   static Future<void> onboardingSeen() async {
     await Hive.box('isFirstTime').put('seenOnboardingScreen', true);
@@ -20,6 +22,7 @@ class DB {
     await Hive.box('hasOrSkippedPassword').put('skippedPasswordValue', true);
   }
 
+  //Passwords stuff
   static void loadPasswordsData() {
     final savedList = _passwordsBox.get("passwordsList");
     if (savedList is List) {
@@ -78,5 +81,29 @@ class DB {
     );
     updateMedicationsData();
     return true;
+  }
+  // History stuff
+
+  static void loadHistoryData() {
+    final savedList = _historyBox.get("historyList");
+    if (savedList is List) {
+      historyLogs = savedList;
+    }
+  }
+
+  static void updateHistoryData() {
+    _historyBox.put("historyList", historyLogs);
+  }
+
+static void recordDoseAction(int index, String status) {
+    final med = medications[index];
+    historyLogs.insert(0, {
+      'date': 'Today · ${med.time}',
+      'name': med.name,
+      'dosage': med.dosage,
+      'status': status,
+    });
+    updateHistoryData();
+    deleteMedication(index);
   }
 }

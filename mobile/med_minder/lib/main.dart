@@ -15,6 +15,10 @@ void main() async {
   DB.loadPasswordsData();
 
   var medicationsBox = await Hive.openBox("medicationsBox");
+  DB.loadMedicationsData();
+
+  var historyBox = await Hive.openBox('historyBox');
+  DB.loadHistoryData();
 
   var hasOrSkippedPasswordBox = await Hive.openBox("hasOrSkippedPassword");
 

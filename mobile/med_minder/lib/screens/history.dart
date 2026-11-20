@@ -1,32 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:med_minder/constants/app_colors.dart';
+import 'package:med_minder/Database/db.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
-  final List historyLogs = const [
-    {
-      'date': 'Yesterday · 20:00',
-      'name': 'Atorvastatin',
-      'dosage': '20 mg · 1 tablet',
-      'status': 'Taken',
-    },
-    {
-      'date': 'Yesterday · 14:00',
-      'name': 'Metformin',
-      'dosage': '500 mg · 1 tablet',
-      'status': 'Skipped',
-    },
-    {
-      'date': 'Sun, Nov 15 · 08:00',
-      'name': 'Metformin',
-      'dosage': '500 mg · 1 tablet',
-      'status': 'Taken',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final historyLogs = DB.historyLogs;
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

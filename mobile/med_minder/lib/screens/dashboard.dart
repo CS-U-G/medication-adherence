@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:med_minder/constants/app_colors.dart';
 import 'package:med_minder/Database/db.dart';
-import 'package:med_minder/screens/settings.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -12,9 +11,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  int takenTodayCount = 0;
 
   @override
   Widget build(BuildContext context) {
+    final remainingCount = DB.medications.length;
+    final totalDoses = takenTodayCount + remainingCount;
+    final progressValue = totalDoses == 0 ? 0.0 : takenTodayCount / totalDoses;
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -31,32 +35,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 16),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Monday, November 16',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Today',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1D1F1E),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+            const Text(
+              'Today',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1D1F1E),
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -79,9 +64,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    '1 of 3 doses taken',
-                    style: TextStyle(
+                  Text(
+                    '$takenTodayCount of $totalDoses doses taken',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF212529),
@@ -91,7 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
-                      value: 0.33,
+                      value: progressValue,
                       backgroundColor: Colors.grey.shade200,
                       color: AppColors.medMinderGreen,
                       minHeight: 5,
@@ -106,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'YOUR SCHEDULE',
+                  'SLIDE RIGHT TO SKIP',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -115,7 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 Text(
-                  'SLIDE TO DELETE',
+                  'SLIDE LEFT TO DELETE',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -140,15 +125,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     endActionPane: ActionPane(
                       motion: const StretchMotion(),
                       children: [
-                        SlidableAction(
+                        CustomSlidableAction(
                           onPressed: (context) {
                             setState(() {
                               DB.deleteMedication(index);
                             });
                           },
-                          icon: Icons.delete,
-                          backgroundColor: Colors.red.shade300,
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            238,
+                            63,
+                            63,
+                          ),
                           borderRadius: BorderRadius.circular(16),
+                          child: const Icon(
+                            Icons.delete,
+                            size: 24,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    startActionPane: ActionPane(
+                      motion: const StretchMotion(),
+                      children: [
+                        CustomSlidableAction(
+                          onPressed: (context) {
+                            setState(() {
+                              DB.recordDoseAction(index, 'Skipped');
+                            });
+                          },
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            119,
+                            79,
+                            19,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          child: const Icon(
+                            Icons.skip_next_rounded,
+                            size: 28,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -209,7 +227,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: Hook up backend logic later
+                              setState(() {
+                                takenTodayCount++;
+                                DB.recordDoseAction(index, 'Taken');
+                              });
                             },
                             child: const Text(
                               'Mark taken',
