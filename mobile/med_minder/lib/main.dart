@@ -20,6 +20,9 @@ void main() async {
   var historyBox = await Hive.openBox('historyBox');
   DB.loadHistoryData();
 
+  var statsBox = await Hive.openBox('statsBox');
+  DB.loadStatsData();
+
   var hasOrSkippedPasswordBox = await Hive.openBox("hasOrSkippedPassword");
 
   final bool hasPassword = hasOrSkippedPasswordBox.get(

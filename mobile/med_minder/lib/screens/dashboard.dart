@@ -11,14 +11,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int takenTodayCount = 0;
-  int skippedTodayCount = 0;
-
   @override
   Widget build(BuildContext context) {
     final remainingCount = DB.medications.length;
-    final totalDoses = takenTodayCount + skippedTodayCount + remainingCount;
-    final progressValue = totalDoses == 0 ? 0.0 : takenTodayCount / totalDoses;
+    final totalDoses =
+        DB.takenTodayCount + DB.skippedTodayCount + remainingCount;
+    final progressValue = totalDoses == 0
+        ? 0.0
+        : DB.takenTodayCount / totalDoses;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -66,7 +66,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '$takenTodayCount of $totalDoses doses taken',
+                    '${DB.takenTodayCount} of $totalDoses doses taken',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -153,8 +153,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         CustomSlidableAction(
                           onPressed: (context) {
                             setState(() {
-                              skippedTodayCount++;
+                              DB.skippedTodayCount++;
                               DB.recordDoseAction(index, 'Skipped');
+                              DB.updateStatsData();
                             });
                           },
                           backgroundColor: const Color.fromARGB(
@@ -230,8 +231,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                takenTodayCount++;
+                                DB.takenTodayCount++;
                                 DB.recordDoseAction(index, 'Taken');
+                                DB.updateStatsData();
                               });
                             },
                             child: const Text(

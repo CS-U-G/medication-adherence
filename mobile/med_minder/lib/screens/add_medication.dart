@@ -232,12 +232,17 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  final medName = _medNameController.text;
+                  final medDosage = _medDosageController.text;
+
                   final didAdd = DB.addMedication(
-                    _medNameController.text,
-                    _medDosageController.text,
+                    medName,
+                    medDosage,
                     _formatTimeOfDay(firstDoseTime),
                   );
+
+                  if (!context.mounted) return;
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -257,6 +262,12 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                   if (didAdd) {
                     _medNameController.clear();
                     _medDosageController.clear();
+                    await DB.setSystemAlarm(
+                      medName,
+                      medDosage,
+                      firstDoseTime.hour,
+                      firstDoseTime.minute,
+                    );
                   }
                 },
                 child: const Text(
