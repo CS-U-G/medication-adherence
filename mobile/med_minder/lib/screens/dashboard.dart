@@ -12,11 +12,12 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int takenTodayCount = 0;
+  int skippedTodayCount = 0;
 
   @override
   Widget build(BuildContext context) {
     final remainingCount = DB.medications.length;
-    final totalDoses = takenTodayCount + remainingCount;
+    final totalDoses = takenTodayCount + skippedTodayCount + remainingCount;
     final progressValue = totalDoses == 0 ? 0.0 : takenTodayCount / totalDoses;
 
     return SafeArea(
@@ -152,6 +153,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         CustomSlidableAction(
                           onPressed: (context) {
                             setState(() {
+                              skippedTodayCount++;
                               DB.recordDoseAction(index, 'Skipped');
                             });
                           },
