@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med_minder/constants/app_colors.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/screens/add_medication.dart';
 import 'package:med_minder/screens/dashboard.dart';
 import 'package:med_minder/screens/history.dart';
@@ -39,22 +40,25 @@ class _BottomNavigationSharedState extends State<BottomNavigationShared> {
         unselectedItemColor: Colors.grey.shade600,
         currentIndex: _navigationIndex, // Highlights "Today"
         onTap: navigatePages,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_today),
-            label: "Today",
+            icon: const Icon(Icons.calendar_today_outlined),
+            activeIcon: const Icon(Icons.calendar_today),
+            label: AppLang.t("Today", "اليوم"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.medication_outlined),
-            activeIcon: Icon(Icons.medication),
-            label: "Add Med",
+            icon: const Icon(Icons.medication_outlined),
+            activeIcon: const Icon(Icons.medication),
+            label: AppLang.t("Add Med", "إضافة دواء"),
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: "Settings",
+            icon: const Icon(Icons.history),
+            label: AppLang.t("History", "السجل"),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings_outlined),
+            activeIcon: const Icon(Icons.settings),
+            label: AppLang.t("Settings", "الإعدادات"),
           ),
         ],
       ),

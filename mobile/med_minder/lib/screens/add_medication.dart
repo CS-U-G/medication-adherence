@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/constants/app_colors.dart';
 
@@ -50,9 +51,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title Header
-            const Text(
-              'YOUR ROUTINE',
-              style: TextStyle(
+            Text(
+              AppLang.t('YOUR ROUTINE', 'جدولك اليومي'),
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
@@ -60,9 +61,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Add Medication',
-              style: TextStyle(
+            Text(
+              AppLang.t('Add Medication', 'إضافة دواء'),
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1D1F1E),
@@ -71,9 +72,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             const SizedBox(height: 24),
 
             // Name Field
-            const Text(
-              'Name',
-              style: TextStyle(
+            Text(
+              AppLang.t('Name', 'الاسم'),
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1D1F1E),
               ),
@@ -82,7 +83,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             TextField(
               controller: _medNameController,
               decoration: InputDecoration(
-                hintText: 'e.g., Metformin',
+                hintText: AppLang.t('e.g., Metformin', 'مثال: ميتفورمين'),
                 hintStyle: TextStyle(color: Colors.grey.shade400),
                 filled: true,
                 fillColor: Colors.white,
@@ -103,9 +104,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             const SizedBox(height: 16),
 
             // Dosage Field
-            const Text(
-              'Dosage',
-              style: TextStyle(
+            Text(
+              AppLang.t('Dosage', 'الجرعة'),
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1D1F1E),
               ),
@@ -114,7 +115,10 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             TextField(
               controller: _medDosageController,
               decoration: InputDecoration(
-                hintText: 'e.g., 500 mg · 1 tablet',
+                hintText: AppLang.t(
+                  'e.g., 500 mg · 1 tablet',
+                  'مثال: 500 ملغ · حبة واحدة',
+                ),
                 hintStyle: TextStyle(color: Colors.grey.shade400),
                 filled: true,
                 fillColor: Colors.white,
@@ -154,9 +158,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                         size: 20,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Reminder Setup',
-                        style: TextStyle(
+                      Text(
+                        AppLang.t('Reminder Setup', 'إعداد التذكير'),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1D1F1E),
@@ -165,9 +169,9 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Dose Time',
-                    style: TextStyle(
+                  Text(
+                    AppLang.t('Dose Time', 'وقت الجرعة'),
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF6C757D),
@@ -248,8 +252,14 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                     SnackBar(
                       content: Text(
                         didAdd
-                            ? 'Medication added!'
-                            : 'Please enter name and dosage.',
+                            ? AppLang.t(
+                                'Medication added!',
+                                'تمت إضافة الدواء!',
+                              )
+                            : AppLang.t(
+                                'Please enter name and dosage.',
+                                'يرجى إدخال الاسم والجرعة.',
+                              ),
                       ),
                       backgroundColor: didAdd
                           ? AppColors.medMinderGreen
@@ -270,9 +280,12 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                     );
                   }
                 },
-                child: const Text(
-                  'Save Medication',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Text(
+                  AppLang.t('Save Medication', 'حفظ الدواء'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

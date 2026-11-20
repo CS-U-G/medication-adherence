@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/screens/dashboard.dart';
 import 'package:med_minder/screens/sign_in.dart';
 import 'package:med_minder/Database/db.dart';
@@ -64,9 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
               Center(
                 child: Column(
                   children: [
-                    const Text(
-                      'A LITTLE HELP, EVERY DAY',
-                      style: TextStyle(
+                    Text(
+                      AppLang.t(
+                        'A LITTLE HELP, EVERY DAY',
+                        'مساعدة بسيطة، كل يوم',
+                      ),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: AppColors.medMinderGreen,
@@ -74,10 +78,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Manage your\nmedications easily',
+                    Text(
+                      AppLang.t(
+                        'Manage your\nmedications easily',
+                        'أدِر أدويتك\nبسهولة',
+                      ),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: AppColors.darkGreenText,
@@ -86,9 +93,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'A calmer routine. A healthier you.',
-                      style: TextStyle(
+                    Text(
+                      AppLang.t(
+                        'A calmer routine. A healthier you.',
+                        'روتين أهدأ. وصحة أفضل لك.',
+                      ),
+                      style: const TextStyle(
                         fontSize: 15,
                         color: AppColors.textMuted,
                       ),
@@ -98,9 +108,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 36),
 
-              const Text(
-                'Password',
-                style: TextStyle(
+              Text(
+                AppLang.t('Password', 'كلمة المرور'),
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -110,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               buildPasswordField(
                 controller: _passwordController,
-                hintText: "Enter password",
+                hintText: AppLang.t("Enter password", "أدخل كلمة المرور"),
                 isObscured: _isPasswordObscured,
                 onToggleVisibility: () {
                   setState(() {
@@ -141,8 +151,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text(
-                            'Incorrect password. Please try again.',
+                          content: Text(
+                            AppLang.t(
+                              'Incorrect password. Please try again.',
+                              'كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.',
+                            ),
                           ),
                           backgroundColor: Colors.red.shade700,
                           behavior: SnackBarBehavior.floating,
@@ -159,9 +172,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    'Enter',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    AppLang.t('Enter', 'دخول'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -190,9 +206,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    "I don't have a password",
-                    style: TextStyle(
+                  child: Text(
+                    AppLang.t("I don't have a password", "ليس لدي كلمة مرور"),
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF4A5550),
@@ -201,10 +217,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-              const Center(
+              Center(
                 child: Text(
-                  'Build a routine, one day at a time.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                  AppLang.t(
+                    'Build a routine, one day at a time.',
+                    'ابنِ روتينك، يوماً بعد يوم.',
+                  ),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

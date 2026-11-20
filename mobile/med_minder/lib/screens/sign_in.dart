@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/screens/dashboard.dart';
 import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/shared/bottom_navigation.dart';
@@ -52,9 +53,9 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 36),
 
-              const Text(
-                'Secure Your Meds',
-                style: TextStyle(
+              Text(
+                AppLang.t('Secure Your Meds', 'احمِ أدويتك'),
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -62,15 +63,21 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Set a password to lock the app',
-                style: TextStyle(fontSize: 16, color: AppColors.textMuted),
+              Text(
+                AppLang.t(
+                  'Set a password to lock the app',
+                  'عيّن كلمة مرور لقفل التطبيق',
+                ),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textMuted,
+                ),
               ),
               const SizedBox(height: 40),
 
-              const Text(
-                'Password',
-                style: TextStyle(
+              Text(
+                AppLang.t('Password', 'كلمة المرور'),
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -80,7 +87,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
               buildPasswordField(
                 controller: _passwordController,
-                hintText: 'Enter password',
+                hintText: AppLang.t('Enter password', 'أدخل كلمة المرور'),
                 isObscured: _isPasswordObscured,
                 onToggleVisibility: () {
                   setState(() {
@@ -90,9 +97,9 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 24),
 
-              const Text(
-                'Confirm Password',
-                style: TextStyle(
+              Text(
+                AppLang.t('Confirm Password', 'تأكيد كلمة المرور'),
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -102,7 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
               buildPasswordField(
                 controller: _confirmPasswordController,
-                hintText: 'confirm password',
+                hintText: AppLang.t('confirm password', 'أكّد كلمة المرور'),
                 isObscured: _isConfirmPasswordObscured,
                 onToggleVisibility: () {
                   setState(() {
@@ -112,9 +119,15 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 14),
 
-              const Text(
-                'Use at least 4 characters.',
-                style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+              Text(
+                AppLang.t(
+                  'Use at least 4 characters.',
+                  'استخدم 4 أحرف على الأقل.',
+                ),
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textMuted,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -128,18 +141,21 @@ class _SignInScreenState extends State<SignInScreen> {
                   color: AppColors.badgeGreenBg,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.lock_outline_rounded,
                       color: AppColors.medMinderGreen,
                       size: 20,
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Only you can access your medication routine.',
-                        style: TextStyle(
+                        AppLang.t(
+                          'Only you can access your medication routine.',
+                          'أنت فقط من يمكنه الوصول إلى جدول أدويتك.',
+                        ),
+                        style: const TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w500,
                           color: AppColors.medMinderGreen,
@@ -167,11 +183,13 @@ class _SignInScreenState extends State<SignInScreen> {
                       DB.hasPassword();
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Password saved!'),
+                        SnackBar(
+                          content: Text(
+                            AppLang.t('Password saved!', 'تم حفظ كلمة المرور!'),
+                          ),
                           backgroundColor: AppColors.medMinderGreen,
                           behavior: SnackBarBehavior.floating,
-                          duration: Duration(seconds: 2),
+                          duration: const Duration(seconds: 2),
                         ),
                       );
 
@@ -184,8 +202,11 @@ class _SignInScreenState extends State<SignInScreen> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text(
-                            'Passwords must match and be at least 4 characters.',
+                          content: Text(
+                            AppLang.t(
+                              'Passwords must match and be at least 4 characters.',
+                              'يجب أن تتطابق كلمتا المرور وتكون 4 أحرف على الأقل.',
+                            ),
                           ),
                           backgroundColor: Colors.red.shade700,
                           behavior: SnackBarBehavior.floating,
@@ -202,9 +223,12 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    'Save & Continue',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    AppLang.t('Save & Continue', 'حفظ ومتابعة'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -235,9 +259,12 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    'Enter without password',
-                    style: TextStyle(
+                  child: Text(
+                    AppLang.t(
+                      'Enter without password',
+                      'الدخول بدون كلمة مرور',
+                    ),
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF4A5550),
@@ -247,10 +274,13 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 20),
 
-              const Center(
+              Center(
                 child: Text(
-                  'Your privacy comes first.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                  AppLang.t('Your privacy comes first.', 'خصوصيتك تأتي أولاً.'),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

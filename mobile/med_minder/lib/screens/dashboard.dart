@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:med_minder/constants/app_colors.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/Database/db.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -36,9 +37,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 16),
 
-            const Text(
-              'Today',
-              style: TextStyle(
+            Text(
+              AppLang.t('Today', 'اليوم'),
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1D1F1E),
@@ -56,9 +57,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Your daily progress',
-                    style: TextStyle(
+                  Text(
+                    AppLang.t('Your daily progress', 'تقدمك اليومي'),
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: Color(0xFF6C757D),
@@ -66,7 +67,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${DB.takenTodayCount} of $totalDoses doses taken',
+                    AppLang.t(
+                      '${DB.takenTodayCount} of $totalDoses doses taken',
+                      'تم تناول ${DB.takenTodayCount} من أصل $totalDoses جرعات',
+                    ),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -91,9 +95,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'SLIDE RIGHT TO SKIP',
-                  style: TextStyle(
+                Text(
+                  AppLang.t('SLIDE RIGHT TO SKIP', 'اسحب لتخطي الجرعة'),
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
@@ -101,7 +105,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 Text(
-                  'SLIDE LEFT TO DELETE',
+                  AppLang.t('SLIDE LEFT TO DELETE', 'اسحب لحذف الدواء'),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -236,9 +240,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 DB.updateStatsData();
                               });
                             },
-                            child: const Text(
-                              'Mark taken',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            child: Text(
+                              AppLang.t('Mark taken', 'تم التناول'),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],

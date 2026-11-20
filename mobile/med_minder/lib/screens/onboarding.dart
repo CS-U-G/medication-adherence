@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/screens/login.dart';
 import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/widgets/feature_row.dart';
@@ -49,9 +50,12 @@ class OnboardingScreen extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                    const Text(
-                      'A LITTLE HELP, EVERY DAY',
-                      style: TextStyle(
+                    Text(
+                      AppLang.t(
+                        'A LITTLE HELP, EVERY DAY',
+                        'مساعدة بسيطة، كل يوم',
+                      ),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: AppColors.medMinderGreen,
@@ -59,10 +63,13 @@ class OnboardingScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Manage your\nmedications easily',
+                    Text(
+                      AppLang.t(
+                        'Manage your\nmedications easily',
+                        'أدِر أدويتك\nبسهولة',
+                      ),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: AppColors.darkGreenText,
@@ -71,9 +78,12 @@ class OnboardingScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'A calmer routine. A healthier you.',
-                      style: TextStyle(
+                    Text(
+                      AppLang.t(
+                        'A calmer routine. A healthier you.',
+                        'روتين أهدأ. وصحة أفضل لك.',
+                      ),
+                      style: const TextStyle(
                         fontSize: 15,
                         color: AppColors.textMuted,
                       ),
@@ -85,22 +95,40 @@ class OnboardingScreen extends StatelessWidget {
 
               buildFeatureRow(
                 icon: Icons.access_time_rounded,
-                title: 'Right dose, right time',
-                subtitle: 'Gentle reminders that fit your day.',
+                title: AppLang.t(
+                  'Right dose, right time',
+                  'الجرعة المناسبة، في الوقت المناسب',
+                ),
+                subtitle: AppLang.t(
+                  'Gentle reminders that fit your day.',
+                  'تذكيرات لطيفة تناسب يومك.',
+                ),
               ),
               const SizedBox(height: 16),
 
               buildFeatureRow(
                 icon: Icons.check_rounded,
-                title: 'Keep track with confidence',
-                subtitle: "See what's taken and what's next.",
+                title: AppLang.t(
+                  'Keep track with confidence',
+                  'تابع التزامك بثقة',
+                ),
+                subtitle: AppLang.t(
+                  "See what's taken and what's next.",
+                  'اعرف ما تم تناوله وما هو التالي.',
+                ),
               ),
               const SizedBox(height: 16),
 
               buildFeatureRow(
                 icon: Icons.lock_outline_rounded,
-                title: 'Your health, kept private',
-                subtitle: 'Protect your routine with a password.',
+                title: AppLang.t(
+                  'Your health, kept private',
+                  'صحتك محفوظة بخصوصية',
+                ),
+                subtitle: AppLang.t(
+                  'Protect your routine with a password.',
+                  'احمِ روتينك بكلمة مرور.',
+                ),
               ),
               const SizedBox(height: 40),
 
@@ -125,18 +153,27 @@ class OnboardingScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    'Get Started',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    AppLang.t('Get Started', 'ابدأ الآن'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
 
-              const Center(
+              Center(
                 child: Text(
-                  'Build a routine, one day at a time.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                  AppLang.t(
+                    'Build a routine, one day at a time.',
+                    'ابنِ روتينك، يوماً بعد يوم.',
+                  ),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

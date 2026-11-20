@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med_minder/constants/app_colors.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/Database/db.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -15,18 +16,18 @@ class HistoryScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'History',
-              style: TextStyle(
+            Text(
+              AppLang.t('History', 'السجل'),
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1D1F1E),
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'PAST DOSES',
-              style: TextStyle(
+            Text(
+              AppLang.t('PAST DOSES', 'الجرعات السابقة'),
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
@@ -95,7 +96,9 @@ class HistoryScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          log['status']!,
+                          isTaken
+                              ? AppLang.t('Taken', 'تم التناول')
+                              : AppLang.t('Skipped', 'تم التخطي'),
                           style: TextStyle(
                             color: isTaken
                                 ? AppColors.medMinderGreen

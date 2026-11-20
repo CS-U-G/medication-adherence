@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/constants/app_colors.dart';
 import 'package:med_minder/widgets/password_field.dart';
@@ -36,9 +37,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Change Password?',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                AppLang.t('Change Password?', 'تغيير كلمة المرور؟'),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -51,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               buildPasswordField(
                 controller: _oldPassCtrl,
-                hintText: 'Old password',
+                hintText: AppLang.t('Old password', 'كلمة المرور القديمة'),
                 isObscured: hideOld,
                 onToggleVisibility: () =>
                     setDialogState(() => hideOld = !hideOld),
@@ -59,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 14),
               buildPasswordField(
                 controller: _newPassCtrl,
-                hintText: 'New password',
+                hintText: AppLang.t('New password', 'كلمة المرور الجديدة'),
                 isObscured: hideNew,
                 onToggleVisibility: () =>
                     setDialogState(() => hideNew = !hideNew),
@@ -89,19 +93,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 if (confirmed) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Password changed!'),
+                    SnackBar(
+                      content: Text(
+                        AppLang.t('Password changed!', 'تم تغيير كلمة المرور!'),
+                      ),
                       backgroundColor: AppColors.medMinderGreen,
                       behavior: SnackBarBehavior.floating,
-                      duration: Duration(seconds: 2),
+                      duration: const Duration(seconds: 2),
                     ),
                   );
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text(
-                        'Could not change password. Check your inputs.',
+                      content: Text(
+                        AppLang.t(
+                          'Could not change password. Check your inputs.',
+                          'تعذر تغيير كلمة المرور. تحقق من المدخلات.',
+                        ),
                       ),
                       backgroundColor: Colors.red.shade700,
                       behavior: SnackBarBehavior.floating,
@@ -110,9 +119,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 }
               },
-              child: const Text(
-                'Change',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: Text(
+                AppLang.t('Change', 'تغيير'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -129,18 +141,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Settings',
-              style: TextStyle(
+            Text(
+              AppLang.t('Settings', 'الإعدادات'),
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1D1F1E),
               ),
             ),
             const SizedBox(height: 32),
-            const Text(
-              'APP PREFERENCES',
-              style: TextStyle(
+            Text(
+              AppLang.t('APP PREFERENCES', 'تفضيلات التطبيق'),
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
@@ -150,11 +162,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 12),
             settingCard(
               Icons.lock_outline,
-              'Change App Password',
-              "Leave a blank if you don't have one",
+              AppLang.t('Change App Password', 'تغيير كلمة مرور التطبيق'),
+              AppLang.t(
+                "Leave a blank if you don't have one",
+                "اتركه فارغاً إذا لم يكن لديك كلمة مرور",
+              ),
               _showChangePasswordDialog,
             ),
-            settingCard(Icons.wb_sunny_outlined, 'App Theme', 'Light', () {}),
+            settingCard(
+              Icons.language,
+              AppLang.t('Language', 'اللغة'),
+              AppLang.t('English', 'العربية'),
+              () async {
+                await AppLang.toggle();
+                setState(() {});
+              },
+            ),
+            //settingCard(Icons.wb_sunny_outlined, 'App Theme', 'Light', () {}),
           ],
         ),
       ),

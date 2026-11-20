@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:med_minder/constants/app_lang.dart';
 import 'package:med_minder/screens/login.dart';
 import 'package:med_minder/screens/onboarding.dart';
 import 'package:med_minder/Database/db.dart';
@@ -40,6 +41,9 @@ void main() async {
   final bool seenOnboardingScreen =
       isFirstTime.get('seenOnboardingScreen', defaultValue: false) as bool;
 
+  var settingsBox = await Hive.openBox('settingsBox');
+  AppLang.load();
+
   runApp(
     MyApp(
       seenOnboardingScreen: seenOnboardingScreen,
@@ -60,6 +64,7 @@ class MyApp extends StatelessWidget {
     required this.hasPassword,
     required this.skippedPassword,
   });
+
   Widget startScreen() {
     if (seenOnboardingScreen) {
       if (hasPassword) {
@@ -73,6 +78,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: startScreen());
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppLang.isArabic,
+      builder: (context, isAr, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          builder: (context, child) {
+            return Directionality(
+              textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+              child: child!,
+            );
+          },
+          home: startScreen(),
+        );
+      },
+    );
   }
 }
