@@ -175,7 +175,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       );
 
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const BottomNavigationShared(),
@@ -217,7 +217,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: OutlinedButton(
                   onPressed: () {
                     DB.skippedPassword();
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const BottomNavigationShared(),
