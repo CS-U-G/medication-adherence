@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:med_minder/Database/db.dart';
 import 'package:med_minder/constants/app_colors.dart';
 
 class AddMedicationScreen extends StatefulWidget {
@@ -9,24 +10,7 @@ class AddMedicationScreen extends StatefulWidget {
 }
 
 class _AddMedicationScreenState extends State<AddMedicationScreen> {
-  int selectedFrequency = 4; // 1 to 4 times daily
   TimeOfDay firstDoseTime = const TimeOfDay(hour: 18, minute: 0);
-
-  // Helper to calculate future dose times based on frequency
-  List<String> _calculateTimes() {
-    List<String> times = [];
-    int intervalHours = (24 ~/ selectedFrequency);
-
-    for (int i = 0; i < selectedFrequency; i++) {
-      int calculatedHour = (firstDoseTime.hour + (i * intervalHours)) % 24;
-      int calculatedMinute = firstDoseTime.minute;
-
-      String formattedTime =
-          '${calculatedHour.toString().padLeft(2, '0')}:${calculatedMinute.toString().padLeft(2, '0')}';
-      times.add(formattedTime);
-    }
-    return times;
-  }
 
   // Opens native Flutter time picker
   Future<void> _pickTime(BuildContext context) async {
@@ -41,9 +25,14 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
     }
   }
 
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
   final TextEditingController _medNameController = TextEditingController();
-  final TextEditingController _medDosageController =
-      TextEditingController();
+  final TextEditingController _medDosageController = TextEditingController();
 
   @override
   void dispose() {
@@ -54,8 +43,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final calculatedTimes = _calculateTimes();
-
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -93,6 +80,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             ),
             const SizedBox(height: 8),
             TextField(
+              controller: _medNameController,
               decoration: InputDecoration(
                 hintText: 'e.g., Metformin',
                 hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -124,6 +112,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
             ),
             const SizedBox(height: 8),
             TextField(
+              controller: _medDosageController,
               decoration: InputDecoration(
                 hintText: 'e.g., 500 mg · 1 tablet',
                 hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -143,57 +132,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
 
-            // Frequency Dropdown
-            const Text(
-              'Frequency',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1D1F1E),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
-                  value: selectedFrequency,
-                  isExpanded: true,
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: Colors.grey.shade600,
-                  ),
-                  items: [1, 2, 3, 4].map((int freq) {
-                    String label = freq == 1
-                        ? '1 time daily'
-                        : '$freq times daily (every ${24 ~/ freq} hours)';
-                    return DropdownMenuItem<int>(
-                      value: freq,
-                      child: Text(
-                        label,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Color(0xFF1D1F1E),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (int? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        selectedFrequency = newValue;
-                      });
-                    }
-                  },
-                ),
-              ),
-            ),
             const SizedBox(height: 20),
 
             // Reminder Setup Card
@@ -227,7 +166,7 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'First Dose Time',
+                    'Dose Time',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -275,38 +214,6 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Auto-calculated schedule',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF6C757D)),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Dynamically generated green time pills
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: calculatedTimes.map((time) {
-                      return Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(17, 19, 111, 73),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          time,
-                          style: TextStyle(
-                            color: AppColors.medMinderGreen,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
                 ],
               ),
             ),
@@ -326,7 +233,31 @@ class _AddMedicationScreenState extends State<AddMedicationScreen> {
                   ),
                 ),
                 onPressed: () {
-                  // TODO: Save medication & schedule to Hive
+                  final didAdd = DB.addMedication(
+                    _medNameController.text,
+                    _medDosageController.text,
+                    _formatTimeOfDay(firstDoseTime),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        didAdd
+                            ? 'Medication added!'
+                            : 'Please enter name and dosage.',
+                      ),
+                      backgroundColor: didAdd
+                          ? AppColors.medMinderGreen
+                          : Colors.red.shade700,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+
+                  if (didAdd) {
+                    _medNameController.clear();
+                    _medDosageController.clear();
+                  }
                 },
                 child: const Text(
                   'Save Medication',

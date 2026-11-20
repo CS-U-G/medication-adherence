@@ -6,21 +6,17 @@ class DB {
   static final _medicationsBox = Hive.box("medicationsBox");
 
   static List _passwords = [];
-  static List<Medication> medications = [
-    Medication(time: '14:00', name: 'Metformin', dosage: '500 mg · 1 tablet'),
-    Medication(time: '20:00', name: 'Atorvastatin', dosage: '20 mg · 1 tablet'),
-    Medication(time: '02:00', name: 'Atorvastatin', dosage: '20 mg · 1 tablet'),
-  ];
+  static List<Medication> medications = [];
 
-  static void onboardingSeen() async {
+  static Future<void> onboardingSeen() async {
     await Hive.box('isFirstTime').put('seenOnboardingScreen', true);
   }
 
-  static void hasPassword() async {
+  static Future<void> hasPassword() async {
     await Hive.box('hasOrSkippedPassword').put('hasPasswordValue', true);
   }
 
-  static void skippedPassword() async {
+  static Future<void> skippedPassword() async {
     await Hive.box('hasOrSkippedPassword').put('skippedPasswordValue', true);
   }
 
@@ -70,5 +66,17 @@ class DB {
   static void deleteMedication(int index) {
     medications.removeAt(index);
     updateMedicationsData();
+  }
+
+  static bool addMedication(String name, String dosage, String time) {
+    final cleanName = name.trim();
+    final cleanDosage = dosage.trim();
+    if (cleanName.isEmpty || cleanDosage.isEmpty) return false;
+
+    medications.add(
+      Medication(time: time, name: cleanName, dosage: cleanDosage),
+    );
+    updateMedicationsData();
+    return true;
   }
 }

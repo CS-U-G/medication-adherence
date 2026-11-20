@@ -124,13 +124,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 54,
                 //Enter button
+                //Enter button
                 child: ElevatedButton(
                   onPressed: () {
-                    if (DB.checkPassword(_passwordController.text)) {
+                    final isMatched = DB.checkPassword(
+                      _passwordController.text,
+                    );
+
+                    if (isMatched) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const BottomNavigationShared(),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text(
+                            'Incorrect password. Please try again.',
+                          ),
+                          backgroundColor: Colors.red.shade700,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
                         ),
                       );
                     }
@@ -143,7 +159,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-
                   child: const Text(
                     'Enter',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

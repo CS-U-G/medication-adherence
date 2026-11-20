@@ -57,8 +57,7 @@ class MyApp extends StatelessWidget {
     if (seenOnboardingScreen) {
       if (hasPassword) {
         return LoginScreen();
-      }
-      else if(skippedPassword){
+      } else if (skippedPassword) {
         return BottomNavigationShared();
       }
     }

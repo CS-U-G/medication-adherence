@@ -155,14 +155,43 @@ class _SignInScreenState extends State<SignInScreen> {
                 width: double.infinity,
                 height: 54,
                 // Save & Continue button
-                child: ElevatedButton(
+                child: // Save & Continue button
+                ElevatedButton(
                   onPressed: () {
-                    if (DB.confirmPassword(
+                    final isValid = DB.confirmPassword(
                       _passwordController.text,
                       _confirmPasswordController.text,
-                    )) {
+                    );
+
+                    if (isValid) {
                       DB.hasPassword();
-                      Navigator.pop(context);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Password saved!'),
+                          backgroundColor: AppColors.medMinderGreen,
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BottomNavigationShared(),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text(
+                            'Passwords must match and be at least 4 characters.',
+                          ),
+                          backgroundColor: Colors.red.shade700,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
