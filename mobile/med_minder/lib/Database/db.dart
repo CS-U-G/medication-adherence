@@ -184,6 +184,4 @@ class DB {
 
     await intent.launch();
   }
-
-  //Theme
 }

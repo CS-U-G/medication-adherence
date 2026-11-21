@@ -36,7 +36,7 @@ void main() async {
     defaultValue: false,
   ) as bool;
 
-  // Guys this box is to check if it's the first time the user opens the application so we can skip the onboardingScreen!
+
   var isFirstTime = await Hive.openBox("isFirstTime");
   final bool seenOnboardingScreen =
       isFirstTime.get('seenOnboardingScreen', defaultValue: false) as bool;

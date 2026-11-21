@@ -13,7 +13,6 @@ class AddMedicationScreen extends StatefulWidget {
 class _AddMedicationScreenState extends State<AddMedicationScreen> {
   TimeOfDay firstDoseTime = const TimeOfDay(hour: 18, minute: 0);
 
-  // Opens native Flutter time picker
   Future<void> _pickTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,

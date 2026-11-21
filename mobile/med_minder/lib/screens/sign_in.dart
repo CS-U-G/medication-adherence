@@ -170,7 +170,6 @@ class _SignInScreenState extends State<SignInScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 54,
-                // Save & Continue button
                 child: // Save & Continue button
                 ElevatedButton(
                   onPressed: () {

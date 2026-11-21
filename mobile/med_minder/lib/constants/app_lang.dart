@@ -17,6 +17,6 @@ class AppLang {
     await setArabic(!isArabic.value);
   }
 
-  // Helper: AppLang.t('English text', 'النص العربي')
+
   static String t(String en, String ar) => isArabic.value ? ar : en;
 }

@@ -134,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 54,
                 //Enter button
-                //Enter button
                 child: ElevatedButton(
                   onPressed: () {
                     final isMatched = DB.checkPassword(

@@ -36,9 +36,9 @@ class _BottomNavigationSharedState extends State<BottomNavigationShared> {
         type: BottomNavigationBarType
             .fixed, // Prevents the invisible white-on-white shifting mode
         backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF136F48), // Your forest green
+        selectedItemColor: AppColors.medMinderGreen,
         unselectedItemColor: Colors.grey.shade600,
-        currentIndex: _navigationIndex, // Highlights "Today"
+        currentIndex: _navigationIndex, 
         onTap: navigatePages,
         items: [
           BottomNavigationBarItem(
