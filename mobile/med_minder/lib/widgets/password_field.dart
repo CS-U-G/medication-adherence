@@ -7,7 +7,7 @@ Widget buildPasswordField({
     required bool isObscured,
     required VoidCallback onToggleVisibility,
   }) {
-    return TextFormField(
+    return TextField(
       controller: controller,
       obscureText: isObscured,
       style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
