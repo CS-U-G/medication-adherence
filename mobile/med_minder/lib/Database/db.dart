@@ -50,15 +50,15 @@ class DB {
   static bool confirmPassword(String input1, String input2) {
     final a = input1.trim();
     final b = input2.trim();
-    if (!_passwords.contains(a)) {
-      if (a.length >= 4 && a == b) {
-        _passwords.add(a);
-        updatePasswordsData();
-        return true;
-      }
+
+    if (a.length < 4 || a != b || _passwords.contains(a)) {
       return false;
     }
-    return false;
+
+    _passwords.clear();
+    _passwords.add(a);
+    updatePasswordsData();
+    return true;
   }
 
   static Future<bool> confirmChangingPassword(
