@@ -33,12 +33,11 @@ class _BottomNavigationSharedState extends State<BottomNavigationShared> {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType
-            .fixed, // Prevents the invisible white-on-white shifting mode
+        type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: AppColors.medMinderGreen,
         unselectedItemColor: Colors.grey.shade600,
-        currentIndex: _navigationIndex, 
+        currentIndex: _navigationIndex,
         onTap: navigatePages,
         items: [
           BottomNavigationBarItem(
